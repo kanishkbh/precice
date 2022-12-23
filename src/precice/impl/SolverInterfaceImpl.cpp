@@ -83,8 +83,8 @@ namespace impl {
 SolverInterfaceImpl::SolverInterfaceImpl(
     std::string        participantName,
     const std::string &configurationFileName,
-    int                solverProcessIndex,
-    int                solverProcessSize,
+    size_t             solverProcessIndex,
+    size_t             solverProcessSize,
     void *             communicator,
     bool               allowNullptr)
     : _accessorName(std::move(participantName)),
@@ -145,8 +145,8 @@ SolverInterfaceImpl::SolverInterfaceImpl(
 SolverInterfaceImpl::SolverInterfaceImpl(
     std::string        participantName,
     const std::string &configurationFileName,
-    int                solverProcessIndex,
-    int                solverProcessSize)
+    size_t             solverProcessIndex,
+    size_t             solverProcessSize)
     : SolverInterfaceImpl::SolverInterfaceImpl(std::move(participantName), configurationFileName, solverProcessIndex, solverProcessSize, nullptr, true)
 {
 }
@@ -154,8 +154,8 @@ SolverInterfaceImpl::SolverInterfaceImpl(
 SolverInterfaceImpl::SolverInterfaceImpl(
     std::string        participantName,
     const std::string &configurationFileName,
-    int                solverProcessIndex,
-    int                solverProcessSize,
+    size_t             solverProcessIndex,
+    size_t             solverProcessSize,
     void *             communicator)
     : SolverInterfaceImpl::SolverInterfaceImpl(std::move(participantName), configurationFileName, solverProcessIndex, solverProcessSize, communicator, false)
 {

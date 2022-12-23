@@ -57,8 +57,8 @@ public:
   SolverInterfaceImpl(
       std::string        participantName,
       const std::string &configurationFileName,
-      int                solverProcessIndex,
-      int                solverProcessSize);
+      size_t             solverProcessIndex,
+      size_t             solverProcessSize);
 
   /**
    * @copybrief SolverInterface::SolverInterface(const std::string&, const std::string&, int, int, void*)
@@ -71,8 +71,8 @@ public:
   SolverInterfaceImpl(
       std::string        participantName,
       const std::string &configurationFileName,
-      int                solverProcessIndex,
-      int                solverProcessSize,
+      size_t             solverProcessIndex,
+      size_t             solverProcessSize,
       void *             communicator);
 
   /**
@@ -409,8 +409,8 @@ private:
   SolverInterfaceImpl(
       std::string        participantName,
       const std::string &configurationFileName,
-      int                solverProcessIndex,
-      int                solverProcessSize,
+      size_t             solverProcessIndex,
+      size_t             solverProcessSize,
       void *             communicator,
       bool               allowNullptr);
 

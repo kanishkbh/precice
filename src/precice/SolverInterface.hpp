@@ -56,8 +56,8 @@ public:
   SolverInterface(
       const std::string &participantName,
       const std::string &configurationFileName,
-      int                solverProcessIndex,
-      int                solverProcessSize);
+      size_t             solverProcessIndex,
+      size_t             solverProcessSize);
 
   /**
    * @brief Constructs a SolverInterface for the given participant and a custom MPI communicator.
@@ -74,8 +74,8 @@ public:
   SolverInterface(
       const std::string &participantName,
       const std::string &configurationFileName,
-      int                solverProcessIndex,
-      int                solverProcessSize,
+      size_t             solverProcessIndex,
+      size_t             solverProcessSize,
       void *             communicator);
 
   ~SolverInterface();

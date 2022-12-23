@@ -8,8 +8,8 @@ namespace precice {
 SolverInterface::SolverInterface(
     const std::string &participantName,
     const std::string &configurationFileName,
-    int                solverProcessIndex,
-    int                solverProcessSize)
+    size_t             solverProcessIndex,
+    size_t             solverProcessSize)
     : _impl(new impl::SolverInterfaceImpl(participantName, configurationFileName, solverProcessIndex, solverProcessSize))
 {
 }
@@ -17,8 +17,8 @@ SolverInterface::SolverInterface(
 SolverInterface::SolverInterface(
     const std::string &participantName,
     const std::string &configurationFileName,
-    int                solverProcessIndex,
-    int                solverProcessSize,
+    size_t             solverProcessIndex,
+    size_t             solverProcessSize,
     void *             communicator)
     : _impl(new impl::SolverInterfaceImpl(participantName, configurationFileName, solverProcessIndex, solverProcessSize, communicator))
 {
