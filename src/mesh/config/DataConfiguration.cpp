@@ -14,17 +14,34 @@ DataConfiguration::DataConfiguration(xml::XMLTag &parent)
   auto attrName = XMLAttribute<std::string>(ATTR_NAME)
                       .setDocumentation("Unique name for the data set.");
 
-  XMLTag tagScalar(*this, VALUE_SCALAR, XMLTag::OCCUR_ARBITRARY, TAG);
+  XMLTag tagScalar(*this, VALUE_SCALAR, XMLTag::OCCUR_ARBITRARY, TAG_MESH_DATA);
   tagScalar.setDocumentation("Defines a scalar data set to be assigned to meshes.");
   tagScalar.addAttribute(attrName);
   parent.addSubtag(tagScalar);
 
-  XMLTag tagVector(*this, VALUE_VECTOR, XMLTag::OCCUR_ARBITRARY, TAG);
+  XMLTag tagVector(*this, VALUE_VECTOR, XMLTag::OCCUR_ARBITRARY, TAG_MESH_DATA);
   tagVector.setDocumentation("Defines a vector data set to be assigned to meshes. The number of "
                              "components of each data entry depends on the spatial dimensions set "
                              "in tag <solver-interface>.");
   tagVector.addAttribute(attrName);
   parent.addSubtag(tagVector);
+
+  XMLTag tagGlobalScalar(*this, VALUE_SCALAR, XMLTag::OCCUR_ARBITRARY, TAG_GLOBAL_DATA);
+  tagGlobalScalar.setDocumentation("Defines a (global) scalar data set that doesn't assign to any mesh."
+                                   "Typically it is data that's space-invariant, e.g., density in case of 
+                                   incompressible flows.");
+  tagGlobalScalar.addAttribute(attrName);
+  parent.addSubtag(tagGlobalScalar);
+
+  XMLTag tagGlobalVector(*this, VALUE_VECTOR, XMLTag::OCCUR_ARBITRARY, TAG_GLOBAL_DATA);
+  tagGlobalVector.setDocumentation("Defines a (global) vector data set that doesn't assign to any mesh."
+                                   "Typically it is data that's space-invariant, e.g., "
+                                   "angles between coordinate systems."
+                                   "The number of components of each data entry depends on 
+                                    the spatial dimensions set in tag <solver-interface>.");
+  tagGlobalVector.addAttribute(attrName);
+  parent.addSubtag(tagGlobalVector);
+
 }
 
 void DataConfiguration::setDimensions(
@@ -53,12 +70,20 @@ void DataConfiguration::xmlTagCallback(
     const xml::ConfigurationContext &context,
     xml::XMLTag &                    tag)
 {
-  if (tag.getNamespace() == TAG) {
+  if (tag.getNamespace() == TAG_MESH_DATA) {
+    const bool isGlobal = false;
     PRECICE_ASSERT(_dimensions != 0);
     const std::string &name           = tag.getStringAttributeValue(ATTR_NAME);
     const std::string &typeName       = tag.getName();
     int                dataDimensions = getDataDimensions(typeName);
-    addData(name, dataDimensions);
+    addData(name, dataDimensions, isGlobal);
+  } else if (tag.getNamespace() == TAG_GLOBAL_DATA) {
+    const bool isGlobal = true;
+    PRECICE_ASSERT(_dimensions != 0);
+    const std::string &name           = tag.getStringAttributeValue(ATTR_NAME);
+    const std::string &typeName       = tag.getName();
+    int                dataDimensions = getDataDimensions(typeName);
+    addData(name, dataDimensions, isGlobal);
   } else {
     PRECICE_ASSERT(false, "Received callback from an unknown tag.", tag.getName());
   }
@@ -72,7 +97,8 @@ void DataConfiguration::xmlEndTagCallback(
 
 void DataConfiguration::addData(
     const std::string &name,
-    int                dataDimensions)
+    int                dataDimensions,
+    bool                isGlobal)
 {
   // Check if data with same name has been added already
   for (auto &elem : _data) {
@@ -81,7 +107,7 @@ void DataConfiguration::addData(
                   name);
   }
 
-  _data.emplace_back(name, dataDimensions);
+  _data.emplace_back(name, dataDimensions, isGlobal);
 }
 
 int DataConfiguration::getDataDimensions(
