@@ -16,11 +16,13 @@ public:
   struct ConfiguredData {
     std::string name;
     int         dimensions;
+    bool        isGlobal; // false = mesh data, true = meshless/global data
 
     ConfiguredData(
         const std::string &name,
-        int                dimensions)
-        : name(name), dimensions(dimensions) {}
+        int                dimensions,
+        bool               isGlobal)
+        : name(name), dimensions(dimensions), isGlobal(isGlobal) {}
   };
 
   DataConfiguration(xml::XMLTag &parent);
@@ -50,7 +52,8 @@ public:
 private:
   mutable logging::Logger _log{"mesh::DataConfiguration"};
 
-  const std::string TAG          = "data";
+  const std::string TAG_MESH_DATA   = "data";
+  const std::string TAG_GLOBAL_DATA = "global-data";
   const std::string ATTR_NAME    = "name";
   const std::string VALUE_VECTOR = "vector";
   const std::string VALUE_SCALAR = "scalar";
