@@ -28,7 +28,7 @@ DataConfiguration::DataConfiguration(xml::XMLTag &parent)
 
   XMLTag tagGlobalScalar(*this, VALUE_SCALAR, XMLTag::OCCUR_ARBITRARY, TAG_GLOBAL_DATA);
   tagGlobalScalar.setDocumentation("Defines a (global) scalar data set that doesn't assign to any mesh."
-                                   "Typically it is data that's space-invariant, e.g., density in case of 
+                                   "Typically it is data that's space-invariant, e.g., density in case of
                                    incompressible flows.");
   tagGlobalScalar.addAttribute(attrName);
   parent.addSubtag(tagGlobalScalar);
@@ -37,11 +37,10 @@ DataConfiguration::DataConfiguration(xml::XMLTag &parent)
   tagGlobalVector.setDocumentation("Defines a (global) vector data set that doesn't assign to any mesh."
                                    "Typically it is data that's space-invariant, e.g., "
                                    "angles between coordinate systems."
-                                   "The number of components of each data entry depends on 
+                                   "The number of components of each data entry depends on
                                     the spatial dimensions set in tag <solver-interface>.");
   tagGlobalVector.addAttribute(attrName);
   parent.addSubtag(tagGlobalVector);
-
 }
 
 void DataConfiguration::setDimensions(
@@ -98,7 +97,7 @@ void DataConfiguration::xmlEndTagCallback(
 void DataConfiguration::addData(
     const std::string &name,
     int                dataDimensions,
-    bool                isGlobal)
+    bool               isGlobal)
 {
   // Check if data with same name has been added already
   for (auto &elem : _data) {
