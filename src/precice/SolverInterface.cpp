@@ -222,6 +222,13 @@ void SolverInterface::writeVectorData(
   _impl->writeVectorData(meshName, dataName, valueIndex, value);
 }
 
+void SolverInterface::writeGlobalVectorData(
+    int           dataID,
+    const double *value)
+{
+  _impl->writeGlobalVectorData(dataID, value);
+}
+
 void SolverInterface::writeVectorGradientData(
     std::string_view meshName,
     std::string_view dataName,
@@ -258,6 +265,14 @@ void SolverInterface::writeScalarData(
     double           value)
 {
   _impl->writeScalarData(meshName, dataName, valueIndex, value);
+}
+
+
+void SolverInterface::writeGlobalScalarData(
+    int    dataID,
+    double value)
+{
+  _impl->writeGlobalScalarData(dataID, value);
 }
 
 void SolverInterface::writeScalarGradientData(
@@ -310,6 +325,22 @@ void SolverInterface::readVectorData(
   _impl->readVectorData(meshName, dataName, valueIndex, relativeReadTime, value);
 }
 
+void SolverInterface::readGlobalVectorData(
+    int     dataID,
+    double *value) const
+{
+  _impl->readGlobalVectorData(dataID, value);
+}
+
+void SolverInterface::readGlobalVectorData(
+    int     dataID,
+    double  relativeReadTime,
+    double *value) const
+{
+  // @todo: needs testing!
+  _impl->readGlobalVectorData(dataID, relativeReadTime, value);
+}
+
 void SolverInterface::readBlockScalarData(
     std::string_view meshName,
     std::string_view dataName,
@@ -348,6 +379,21 @@ void SolverInterface::readScalarData(
     double &         value) const
 {
   _impl->readScalarData(meshName, dataName, valueIndex, relativeReadTime, value);
+}
+
+void SolverInterface::readGlobalScalarData(
+    int     dataID,
+    double &value) const
+{
+  _impl->readGlobalScalarData(dataID, value);
+}
+
+void SolverInterface::readGlobalScalarData(
+    int     dataID,
+    double  relativeReadTime,
+    double &value) const
+{
+  _impl->readGlobalScalarData(dataID, relativeReadTime, value);
 }
 
 void SolverInterface::setMeshAccessRegion(std::string_view meshName,

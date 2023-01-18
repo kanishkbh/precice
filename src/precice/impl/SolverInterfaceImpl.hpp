@@ -277,6 +277,11 @@ public:
       int              valueIndex,
       double           value);
 
+  /// @copydoc SolverInterface::writeGlobalScalarData
+  void writeGlobalScalarData(
+      int    dataID,
+      double value);
+
   /// @copydoc precice::SolverInterface::writeScalarGradientData
   void writeScalarGradientData(
       std::string_view meshName,
@@ -316,6 +321,17 @@ public:
       double           relativeReadTime,
       double *         value) const;
 
+  /// @copydoc SolverInterface::readGlobalVectorData(int, double*) const
+  void readGlobalVectorData(
+      int     toDataID,
+      double *value) const;
+
+  /// @copydoc SolverInterface::readGlobalVectorData(int, double, double*) const
+  void readGlobalVectorData(
+      int     toDataID,
+      double  relativeReadTime,
+      double *value) const;
+
   /// @copydoc SolverInterface::readBlockScalarData(int, int, const int*, double*) const
   void readBlockScalarData(
       std::string_view meshName,
@@ -348,6 +364,16 @@ public:
       double           relativeReadTime,
       double &         value) const;
 
+  /// @copydoc SolverInterface::readGlobalScalarData(int, double&) const
+  void readGlobalScalarData(
+      int     toDataID,
+      double &value) const;
+
+  /// @copydoc SolverInterface::readGlobalScalarData(int, double, double&) const
+  void readGlobalScalarData(
+      int     toDataID,
+      double  relativeReadTime,
+      double &value) const;
   ///@}
 
   /** @name Experimental Data Access
@@ -491,6 +517,11 @@ private:
       double           relativeReadTime,
       double *         value) const;
 
+  void readGlobalVectorDataImpl(
+      int     toDataID,
+      double  relativeReadTime,
+      double *value) const;
+
   void readBlockScalarDataImpl(
       std::string_view meshName,
       std::string_view dataName,
@@ -505,6 +536,11 @@ private:
       int              valueIndex,
       double           relativeReadTime,
       double &         value) const;
+
+  void readGlobalScalarDataImpl(
+      int     toDataID,
+      double  relativeReadTime,
+      double &value) const;
 
   /// Exports meshes with data and watch point data.
   void handleExports();
