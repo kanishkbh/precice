@@ -587,6 +587,25 @@ public:
       const double *value);
 
   /**
+   * @brief Writes global vector data
+   *
+   * This function writes a value a global vector data.
+   * Values are provided as a block of continuous memory.
+   *
+   * The 2D-format of value is (x, y)
+   * The 3D-format of value is (x, y, z)
+   *
+   * @param[in] dataID ID to write to.
+   * @param[in] value Pointer to the vector value.
+   *
+   * @pre count of available elements at value matches the configured dimension
+   * @pre initialize() has been called
+   */
+  void writeGlobalVectorData(
+      int           dataID,
+      const double *value);
+
+  /**
    * @brief Writes scalar data given as block.
    *
    * This function writes values of specified vertices to a dataID.
@@ -626,6 +645,20 @@ public:
   void writeScalarData(
       int    dataID,
       int    valueIndex,
+      double value);
+
+  /**
+   * @brief Writes global scalar data
+   *
+   * This function writes a value to a global scalar data.
+   *
+   * @param[in] dataID ID to write to.
+   * @param[in] value The value to write.
+   *
+   * @pre initialize() has been called
+   */
+  void writeGlobalScalarData(
+      int    dataID,
       double value);
 
   /**
@@ -683,6 +716,27 @@ public:
       double *value) const;
 
   /**
+   * @brief Reads global vector data. Values correspond to the end of the current time window.
+   *
+   * This function reads the value of a global data object from a dataID.
+   * Values are provided as a block of continuous memory.
+   *
+   * The 2D-format of value is (x, y)
+   * The 3D-format of value is (x, y, z)
+   *
+   * @param[in] dataID ID to read from.
+   * @param[out] value Pointer to the vector value.
+   *
+   * @pre count of available elements at value matches the configured dimension
+   * @pre initialize() has been called
+   *
+   * @post value contains the read data as specified in the above format.
+   */
+  void readGlobalVectorData(
+      int     dataID,
+      double *value) const;
+
+  /**
    * @brief Reads scalar data values given as block from a mesh. Values correspond to the end of the current time window.
    *
    * This function reads values of specified vertices from a dataID.
@@ -726,6 +780,22 @@ public:
   void readScalarData(
       int     dataID,
       int     valueIndex,
+      double &value) const;
+
+  /**
+   * @brief Reads global scalar data. Values correspond to the end of the current time window.
+   *
+   * This function reads the value of a global data object from a dataID.
+   *
+   * @param[in] dataID ID to read from.
+   * @param[out] value Read destination of the value.
+   *
+   * @pre initialize() has been called
+   *
+   * @post value contains the read data.
+   */
+  void readGlobalScalarData(
+      int     dataID,
       double &value) const;
 
   ///@}
@@ -901,6 +971,36 @@ public:
       double *value) const;
 
   /**
+   * @brief Reads global vector data. Values correspond to a given point in time relative to the beginning of the current timestep.
+   *
+   * @experimental
+   *
+   * This function reads a global value from a dataID.
+   * Values are provided as a block of continuous memory.
+   *
+   * The 2D-format of value is (x, y)
+   * The 3D-format of value is (x, y, z)
+   *
+   * The data is read at relativeReadTime, which indicates the point in time measured from the beginning of the current time step.
+   * relativeReadTime = 0 corresponds to data at the beginning of the time step. Assuming that the user will call advance(dt) at the
+   * end of the time step, dt indicates the length of the current time step. Then relativeReadTime = dt corresponds to the data at
+   * the end of the time step.
+   *
+   * @param[in] dataID ID to read from.
+   * @param[in] relativeReadTime Point in time where data is read relative to the beginning of the current time step.
+   * @param[out] value Pointer to the vector value.
+   *
+   * @pre count of available elements at value matches the configured dimension
+   * @pre initialize() has been called
+   *
+   * @post value contains the read data as specified in the above format.
+   */
+  void readGlobalVectorData(
+      int     dataID,
+      double  relativeReadTime,
+      double *value) const;
+
+  /**
    * @brief Reads scalar data values given as block from a mesh. Values correspond to a given point in time relative to the beginning of the current timestep.
    *
    * @experimental
@@ -961,6 +1061,31 @@ public:
   void readScalarData(
       int     dataID,
       int     valueIndex,
+      double  relativeReadTime,
+      double &value) const;
+
+  /**
+   * @brief Reads global scalar data. Values correspond to a given point in time relative to the beginning of the current timestep.
+   *
+   * @experimental
+   *
+   * This function reads a global value from a dataID.
+   *
+   * The data is read at relativeReadTime, which indicates the point in time measured from the beginning of the current time step.
+   * relativeReadTime = 0 corresponds to data at the beginning of the time step. Assuming that the user will call advance(dt) at the
+   * end of the time step, dt indicates the length of the current time step. Then relativeReadTime = dt corresponds to the data at
+   * the end of the time step.
+   *
+   * @param[in] dataID ID to read from.
+   * @param[in] relativeReadTime Point in time where data is read relative to the beginning of the current time step
+   * @param[out] value Read destination of the value.
+   *
+   * @pre initialize() has been called
+   *
+   * @post value contains the read data.
+   */
+  void readGlobalScalarData(
+      int     dataID,
       double  relativeReadTime,
       double &value) const;
 
