@@ -168,6 +168,20 @@ WriteDataContext &Participant::writeDataContext(DataID dataID)
   return it->second;
 }
 
+const GlobalDataContext &Participant::globalDataContext(DataID dataID) const
+{
+  auto it = _globalDataContexts.find(dataID);
+  PRECICE_CHECK(it != _globalDataContexts.end(), "DataID \"{}\" does not exist as global data.", dataID)
+  return it->second;
+}
+
+GlobalDataContext &Participant::globalDataContext(DataID dataID)
+{
+  auto it = _globalDataContexts.find(dataID);
+  PRECICE_CHECK(it != _globalDataContexts.end(), "DataID \"{}\" does not exist as global data.", dataID)
+  return it->second;
+}
+
 bool Participant::hasData(DataID dataID) const
 {
   return std::any_of(
