@@ -275,6 +275,11 @@ public:
       int    valueIndex,
       double value);
 
+  /// @copydoc SolverInterface::writeGlobalScalarData
+  void writeGlobalScalarData(
+      int    dataID,
+      double value);
+
   /// @copydoc precice::SolverInterface::writeScalarGradientData
   void writeScalarGradientData(
       int           fromDataID,
@@ -309,6 +314,17 @@ public:
       double  relativeReadTime,
       double *value) const;
 
+  /// @copydoc SolverInterface::readGlobalVectorData(int, double*) const
+  void readGlobalVectorData(
+      int     toDataID,
+      double *value) const;
+
+  /// @copydoc SolverInterface::readGlobalVectorData(int, double, double*) const
+  void readGlobalVectorData(
+      int     toDataID,
+      double  relativeReadTime,
+      double *value) const;
+
   /// @copydoc SolverInterface::readBlockScalarData(int, int, const int*, double*) const
   void readBlockScalarData(
       int        toDataID,
@@ -337,6 +353,16 @@ public:
       double  relativeReadTime,
       double &value) const;
 
+  /// @copydoc SolverInterface::readGlobalScalarData(int, double&) const
+  void readGlobalScalarData(
+      int     toDataID,
+      double &value) const;
+
+  /// @copydoc SolverInterface::readGlobalScalarData(int, double, double&) const
+  void readGlobalScalarData(
+      int     toDataID,
+      double  relativeReadTime,
+      double &value) const;
   ///@}
 
   /** @name Experimental Data Access
@@ -478,6 +504,11 @@ private:
       double  relativeReadTime,
       double *value) const;
 
+  void readGlobalVectorDataImpl(
+      int     toDataID,
+      double  relativeReadTime,
+      double *value) const;
+
   void readBlockScalarDataImpl(
       int        toDataID,
       int        size,
@@ -488,6 +519,11 @@ private:
   void readScalarDataImpl(
       int     toDataID,
       int     valueIndex,
+      double  relativeReadTime,
+      double &value) const;
+
+  void readGlobalScalarDataImpl(
+      int     toDataID,
       double  relativeReadTime,
       double &value) const;
 

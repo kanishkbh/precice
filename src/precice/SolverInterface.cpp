@@ -237,6 +237,13 @@ void SolverInterface::writeVectorData(
   _impl->writeVectorData(dataID, valueIndex, value);
 }
 
+void SolverInterface::writeGlobalVectorData(
+    int           dataID,
+    const double *value)
+{
+  _impl->writeGlobalVectorData(dataID, value);
+}
+
 void SolverInterface::writeVectorGradientData(
     int           dataID,
     int           valueIndex,
@@ -271,10 +278,15 @@ void SolverInterface::writeScalarData(
   _impl->writeScalarData(dataID, valueIndex, value);
 }
 
-void SolverInterface::writeScalarGradientData(
-    int           dataID,
-    int           valueIndex,
-    const double *gradientValues)
+void SolverInterface::writeGlobalScalarData(
+    int    dataID,
+    double value)
+{
+  _impl->writeGlobalScalarData(dataID, value);
+}
+
+void SolverInterface::writeScalarGradientData(int dataID, int valueIndex,
+                                              const double *gradientValues)
 {
   _impl->writeScalarGradientData(dataID, valueIndex, gradientValues);
 }
@@ -316,6 +328,22 @@ void SolverInterface::readVectorData(
   _impl->readVectorData(dataID, valueIndex, relativeReadTime, value);
 }
 
+void SolverInterface::readGlobalVectorData(
+    int     dataID,
+    double *value) const
+{
+  _impl->readGlobalVectorData(dataID, value);
+}
+
+void SolverInterface::readGlobalVectorData(
+    int     dataID,
+    double  relativeReadTime,
+    double *value) const
+{
+  // @todo: needs testing!
+  _impl->readGlobalVectorData(dataID, relativeReadTime, value);
+}
+
 void SolverInterface::readBlockScalarData(
     int        dataID,
     int        size,
@@ -350,6 +378,21 @@ void SolverInterface::readScalarData(
     double &value) const
 {
   _impl->readScalarData(dataID, valueIndex, relativeReadTime, value);
+}
+
+void SolverInterface::readGlobalScalarData(
+    int     dataID,
+    double &value) const
+{
+  _impl->readGlobalScalarData(dataID, value);
+}
+
+void SolverInterface::readGlobalScalarData(
+    int     dataID,
+    double  relativeReadTime,
+    double &value) const
+{
+  _impl->readGlobalScalarData(dataID, relativeReadTime, value);
 }
 
 void SolverInterface::setMeshAccessRegion(const int     meshID,
