@@ -104,6 +104,10 @@ public:
       const mesh::PtrMesh &mesh,
       int                  interpolationOrder);
 
+  void addGlobalData(
+      const mesh::PtrData &data,
+      int                  interpolationOrder);
+
   /// Adds a configured read \ref Mapping to the ParticipantState
   void addReadMappingContext(const MappingContext &mappingContext);
 
