@@ -18,6 +18,7 @@
 #include "mapping/SharedPointer.hpp"
 #include "mesh/SharedPointer.hpp"
 #include "partition/ReceivedPartition.hpp"
+#include "precice/impl/GlobalDataContext.hpp"
 #include "precice/impl/ReadDataContext.hpp"
 #include "precice/impl/WriteDataContext.hpp"
 #include "precice/types.hpp"
@@ -163,6 +164,16 @@ public:
    */
   WriteDataContext &writeDataContext(std::string_view mesh, std::string_view data);
 
+  /** Provides access to \ref GlobalDataContext
+   * @pre there exists a \ref GlobalDataContext for \ref dataID
+   */
+  const GlobalDataContext &globalDataContext(DataID dataID) const;
+
+  /** Provides access to \ref GlobalDataContext
+   * @pre there exists a \ref GlobalDataContext for \ref dataID
+   */
+  GlobalDataContext &globalDataContext(DataID dataID);
+
   /** Provides access to all \ref WriteDataContext objects
    * @remarks does not contain nullptr.
    */
@@ -177,6 +188,14 @@ public:
   auto readDataContexts()
   {
     return _readDataContexts | boost::adaptors::map_values;
+  }
+
+  /** Provides access to all \ref GlobalDataContext objects
+   * @remarks does not contain nullptr.
+   */
+  auto gobalDataContexts()
+  {
+    return _globalDataContexts | boost::adaptors::map_values;
   }
 
   /** @brief Determines and returns the maximum order of all read waveforms of this participant
@@ -351,6 +370,8 @@ private:
   DataMap<WriteDataContext> _writeDataContexts;
 
   DataMap<ReadDataContext> _readDataContexts;
+
+  std::map<DataID, GlobalDataContext> _globalDataContexts;
 
   bool _useIntraComm = false;
 
