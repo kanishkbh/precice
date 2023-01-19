@@ -106,8 +106,8 @@ public:
 
   /// Adds a configured global \ref Data to the Participant
   void addGlobalData(
-      const mesh::PtrData &data,
-      int                  interpolationOrder);
+      const mesh::PtrGlobalData &data,
+      int                        interpolationOrder = time::Time::DEFAULT_INTERPOLATION_ORDER);
 
   /// Adds a configured read \ref Mapping to the Participant
   void addReadMappingContext(const MappingContext &mappingContext);
