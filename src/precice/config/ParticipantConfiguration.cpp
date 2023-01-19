@@ -317,13 +317,18 @@ void ParticipantConfiguration::xmlTagCallback(
     _participants.back()->receiveMesh(mesh, from, safetyFactor, geoFilter, allowDirectAccess);
   } else if (tag.getName() == TAG_WRITE) {
     const std::string &dataName = tag.getStringAttributeValue(ATTR_NAME);
-    std::string        meshName = tag.getStringAttributeValue(ATTR_MESH);
+    std::string        meshName = tag.getStringAttributeValue(ATTR_MESH); // TODO: will this work if there is no mesh attribute under this write-data tag?
     mesh::PtrMesh      mesh     = _meshConfig->getMesh(meshName);
-    PRECICE_CHECK(mesh,
-                  R"(Participant "{}" attempts to read data "{}" from an unknown mesh "{}". <mesh name="{}"> needs to be defined first.)",
-                  _participants.back()->getName(), dataName, meshName, meshName);
-    mesh::PtrData data = getData(mesh, dataName);
-    _participants.back()->addWriteData(data, mesh);
+    if (!(mesh)) { // no mesh implies it's global data
+      mesh::PtrGlobalData data = getGlobalData(dataName);
+      _participants.back()->addGlobalData(data);
+    } else {
+      // PRECICE_CHECK(mesh,
+      //               "Participant \"{}\" has to use mesh \"{}\" in order to write data to it. Please add a use-mesh node with name=\"{}\".",
+      //               _participants.back()->getName(), meshName, meshName);
+      mesh::PtrData data = getData(mesh, dataName);
+      _participants.back()->addWriteData(data, mesh);
+    }
   } else if (tag.getName() == TAG_READ) {
     const std::string &dataName = tag.getStringAttributeValue(ATTR_NAME);
     std::string        meshName = tag.getStringAttributeValue(ATTR_MESH);
@@ -336,7 +341,16 @@ void ParticipantConfiguration::xmlTagCallback(
     if (waveformOrder < time::Time::MIN_INTERPOLATION_ORDER || waveformOrder > time::Time::MAX_INTERPOLATION_ORDER) {
       PRECICE_ERROR("You tried to configure the read data with name \"{}\" to use the waveform-order=\"{}\", but the order must be between \"{}\" and \"{}\". Please use an order in the allowed range.", dataName, waveformOrder, time::Time::MIN_INTERPOLATION_ORDER, time::Time::MAX_INTERPOLATION_ORDER);
     }
-    _participants.back()->addReadData(data, mesh, waveformOrder);
+    if (!(mesh)) { // no mesh implies it's global data
+      mesh::PtrGlobalData data = getGlobalData(dataName);
+      _participants.back()->addGlobalData(data, waveformOrder);
+    } else {
+      // PRECICE_CHECK(mesh,
+      //               "Participant \"{}\" has to use mesh \"{}\" in order to read data from it. Please add a use-mesh node with name=\"{}\".",
+      //               _participants.back()->getName(), meshName, meshName);
+      mesh::PtrData data = getData(mesh, dataName);
+      _participants.back()->addReadData(data, mesh, waveformOrder);
+    }
   } else if (tag.getName() == TAG_WATCH_POINT) {
     PRECICE_ASSERT(_dimensions != 0); // setDimensions() has been called
     WatchPointConfig config;
@@ -404,6 +418,18 @@ const mesh::PtrData &ParticipantConfiguration::getData(
                 "Please add a use-data tag with name=\"{}\" to this mesh.",
                 _participants.back()->getName(), nameData, mesh->getName(), nameData);
   return mesh->data(nameData);
+}
+
+const mesh::PtrGlobalData &ParticipantConfiguration::getGlobalData(
+    const std::string &nameData) const
+{
+  // PRECICE_CHECK(mesh->hasDataName(nameData),
+  //               "Participant \"{}\" asks for data \"{}\" from mesh \"{}\", but this mesh does not use such data. "
+  //               "Please add a use-data tag with name=\"{}\" to this mesh.",
+  //               _participants.back()->getName(), nameData, mesh->getName(), nameData);
+  // return mesh->data(nameData);
+  PRECICE_ERROR("getGlobalData() is WIP. Yet to figure out where to store global data (instead of the `mesh` object in ParticipantConfig).");
+  return NULL;
 }
 
 void ParticipantConfiguration::finishParticipantConfiguration(
