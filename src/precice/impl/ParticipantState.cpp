@@ -14,6 +14,7 @@
 #include "io/Export.hpp"
 #include "logging/LogMacros.hpp"
 #include "mesh/Data.hpp"
+#include "mesh/GlobalData.hpp"
 #include "mesh/Mesh.hpp"
 #include "mesh/config/DataConfiguration.hpp"
 #include "mesh/config/MeshConfiguration.hpp"
@@ -127,6 +128,7 @@ void Participant::addGlobalData(
 {
   // checkDuplicatedData(data, mesh->getName());
   //TODO: add support for global data in checkDuplicatedData
+  // EDITED
   _globalDataContexts.emplace(data->getID(), GlobalDataContext(data, interpolationOrder));
 }
 
