@@ -251,6 +251,11 @@ public:
       int           valueIndex,
       const double *value);
 
+  /// @copydoc SolverInterface::writeGlobalVectorData
+  void writeGlobalVectorData(
+      int           fromDataID,
+      const double *value);
+
   /// @copydoc precice::SolverInterface::writeVectorGradientData
   void writeVectorGradientData(
       int           fromDataID,

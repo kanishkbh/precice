@@ -118,8 +118,8 @@ void Participant::addReadData(
 }
 
 void Participant::addGlobalData(
-    const mesh::PtrData &data,
-    int                  interpolationOrder)
+    const mesh::PtrGlobalData &data,
+    int                        interpolationOrder)
 {
   // checkDuplicatedData(data, mesh->getName());
   //TODO: add support for global data in checkDuplicatedData
