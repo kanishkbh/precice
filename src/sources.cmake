@@ -208,6 +208,8 @@ target_sources(precice
     src/mesh/Edge.cpp
     src/mesh/Edge.hpp
     src/mesh/Filter.hpp
+    src/mesh/GlobalData.cpp
+    src/mesh/GlobalData.hpp
     src/mesh/Mesh.cpp
     src/mesh/Mesh.hpp
     src/mesh/RangeAccessor.hpp
@@ -245,6 +247,8 @@ target_sources(precice
     src/precice/impl/CommonErrorMessages.hpp
     src/precice/impl/DataContext.cpp
     src/precice/impl/DataContext.hpp
+    src/precice/impl/GlobalDataContext.cpp
+    src/precice/impl/GlobalDataContext.hpp
     src/precice/impl/MappingContext.hpp
     src/precice/impl/MeshContext.hpp
     src/precice/impl/Participant.cpp
