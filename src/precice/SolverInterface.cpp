@@ -93,6 +93,19 @@ bool SolverInterface::hasData(std::string_view meshName, std::string_view dataNa
   return _impl->hasData(meshName, dataName);
 }
 
+
+bool SolverInterface::hasGlobalData(
+    const std::string &dataName) const
+{
+  return _impl->hasGlobalData(dataName);
+}
+
+int SolverInterface::getGlobalDataID(
+    const std::string &dataName) const
+{
+  return _impl->getGlobalDataID(dataName, meshID);
+}
+
 // void SolverInterface:: resetMesh
 //(
 //   std::string_view meshName )
