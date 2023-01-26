@@ -229,8 +229,14 @@ public:
   /// @copydoc SolverInterface::hasData
   bool hasData(const std::string &dataName, MeshID meshID) const;
 
+  /// @copydoc SolverInterface::hasGlobalData
+  bool hasGlobalData(const std::string &dataName) const;
+
   /// @copydoc SolverInterface::getDataID
   int getDataID(const std::string &dataName, MeshID meshID) const;
+
+  /// @copydoc SolverInterface::getGlobalDataID
+  int getGlobalDataID(const std::string &dataName) const;
 
   /// @copydoc SolverInterface::writeBlockVectorData
   void writeBlockVectorData(
