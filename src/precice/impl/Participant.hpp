@@ -85,6 +85,7 @@ public:
   /// Adds a configured global \ref Data to the Participant
   void addGlobalData(
       const mesh::PtrGlobalData &data,
+      std::string                direction,
       int                        interpolationOrder = time::Time::DEFAULT_INTERPOLATION_ORDER);
 
   /// Adds a configured read \ref Mapping to the Participant
@@ -201,8 +202,14 @@ public:
   /// Is the dataID know to preCICE?
   bool hasData(DataID dataID) const;
 
+  /// Is the global dataID known to preCICE?
+  bool hasGlobalData(DataID dataID) const;
+
   /// Is the data used by this participant?
   bool isDataUsed(const std::string &dataName, MeshID meshId) const;
+
+  /// Is the global data used by this participant?
+  bool isGlobalDataUsed(const std::string &dataName) const;
 
   /// Is the participant allowed to read the data?
   bool isDataRead(DataID dataID) const;
@@ -212,6 +219,9 @@ public:
 
   /// What is the dataID of the used data from a used mesh given the meshid and the data name?
   int getUsedDataID(const std::string &dataName, MeshID meshID) const;
+
+  /// What is the dataID of the used global data given the data name?
+  int getUsedGlobalDataID(const std::string &dataName) const;
 
   /// What is the name of the given data id
   std::string getDataName(DataID dataID) const;
