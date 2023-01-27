@@ -57,6 +57,15 @@ DataConfiguration::data() const
   return _data;
 }
 
+const PtrGlobalData &DataConfiguration::globalData(const std::string &dataName) const
+{
+  auto iter = std::find_if(_globalData.begin(), _globalData.end(), [&dataName](const auto &dptr) {
+    return dptr->getName() == dataName;
+  });
+  PRECICE_ASSERT(iter != _globalData.end(), "Global Data not found in Data Configuration", dataName);
+  return *iter;
+}
+
 DataConfiguration::ConfiguredData DataConfiguration::getRecentlyConfiguredData() const
 {
   PRECICE_ASSERT(_data.size() > 0);
@@ -83,6 +92,7 @@ void DataConfiguration::xmlTagCallback(
     const std::string &typeName       = tag.getName();
     int                dataDimensions = getDataDimensions(typeName);
     addData(name, dataDimensions, isGlobal);
+    createGlobalData(name, dataDimensions, _dataIDManager.getFreeID());
   } else {
     PRECICE_ASSERT(false, "Received callback from an unknown tag.", tag.getName());
   }
@@ -107,6 +117,21 @@ void DataConfiguration::addData(
   }
 
   _data.emplace_back(name, dataDimensions, isGlobal);
+}
+
+void DataConfiguration::createGlobalData(const std::string &name,
+                                         int                dimension,
+                                         DataID             id)
+{
+  PRECICE_TRACE(name, dimension);
+  for (const PtrGlobalData &globalData : _globalData) {
+    PRECICE_CHECK(globalData->getName() != name,
+                  "Global data \"{}\" cannot be created twice."
+                  "Please rename or remove one of the global-data tags with name \"{}\".",
+                  name, name);
+  }
+  PtrGlobalData globalData(new GlobalData(name, id, dimension));
+  _globalData.push_back(globalData);
 }
 
 int DataConfiguration::getDataDimensions(
