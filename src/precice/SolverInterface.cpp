@@ -120,7 +120,7 @@ int SolverInterface::getDataID(
 int SolverInterface::getGlobalDataID(
     const std::string &dataName) const
 {
-  return _impl->getGlobalDataID(dataName, meshID);
+  return _impl->getGlobalDataID(dataName);
 }
 
 //void SolverInterface:: resetMesh
