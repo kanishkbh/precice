@@ -10,10 +10,12 @@ logging::Logger GlobalDataContext::_log{"impl::GlobalDataContext"};
 
 GlobalDataContext::GlobalDataContext(
     mesh::PtrGlobalData data,
+    std::string         direction,
     int                 interpolationOrder)
 {
   PRECICE_ASSERT(data);
   _providedData = data;
+  _direction    = direction;
   _waveform     = std::make_shared<time::Waveform>(interpolationOrder);
 }
 
