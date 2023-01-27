@@ -37,6 +37,7 @@ public:
    * @param interpolationOrder Order of the Waveform stored by this GlobalDataContext.
    */
   GlobalDataContext(mesh::PtrGlobalData data,
+                    std::string         _direction,
                     int                 interpolationOrder = time::Time::DEFAULT_INTERPOLATION_ORDER);
 
   /**
@@ -84,6 +85,9 @@ private:
 
   /// Unique data this context is associated with
   mesh::PtrGlobalData _providedData;
+
+  /// Whether this is "read" context or "write" context
+  std::string _direction;
 
   time::PtrWaveform _waveform;
 };
