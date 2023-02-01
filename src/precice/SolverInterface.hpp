@@ -526,13 +526,13 @@ public:
    */
   bool hasData(const std::string &dataName, int meshID) const;
 
-  /**
-   * @brief Checks if the data with given name is used by a solver.
-   *
-   * @param[in] dataName the name of the data
-   * @returns whether the mesh is used(?))
-   */
-  bool hasGlobalData(const std::string &dataName) const;
+  //   /**
+  //    * @brief Checks if the data with given name is used by a solver.
+  //    *
+  //    * @param[in] dataName the name of the data
+  //    * @returns whether the mesh is used(?))
+  //    */
+  //   bool hasGlobalData(const std::string &dataName) const;
 
   /**
    * @brief Returns the ID of the data associated with the given name and mesh.

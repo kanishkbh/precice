@@ -102,11 +102,11 @@ bool SolverInterface::hasData(
   return _impl->hasData(dataName, meshID);
 }
 
-bool SolverInterface::hasGlobalData(
-    const std::string &dataName) const
-{
-  return _impl->hasGlobalData(dataName);
-}
+// bool SolverInterface::hasGlobalData(
+//     const std::string &dataName) const
+// {
+//   return _impl->hasGlobalData(dataName);
+// }
 
 int SolverInterface::getDataID(
     const std::string &dataName, int meshID) const
