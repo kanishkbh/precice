@@ -58,6 +58,7 @@ void SolverInterfaceConfiguration::xmlTagCallback(
     _meshConfiguration->setDimensions(_dimensions);
     _participantConfiguration->setDimensions(_dimensions);
     _experimental = tag.getBooleanAttributeValue("experimental");
+    _dataConfiguration->setExperimental(_experimental);
     _couplingSchemeConfiguration->setExperimental(_experimental);
     _participantConfiguration->setExperimental(_experimental);
   } else {
