@@ -68,12 +68,11 @@ ParticipantConfiguration::ParticipantConfiguration(
                           .setDocumentation("Name of the data.");
   tagWriteData.addAttribute(attrDataName);
   tagReadData.addAttribute(attrDataName);
-  auto attrMesh = XMLAttribute<std::string>(ATTR_MESH, "none")
+  auto attrMesh = XMLAttribute<std::string>(ATTR_MESH, "")
                       .setDocumentation(
                           "Mesh the data belongs to. If data should be read/written to several "
                           "meshes, this has to be specified separately for each mesh."
                           "For global data, omit this attribute.");
-  //TODO: mesh name = "none" for global data, is a temporary thing. Can make a better design decision here.
   tagWriteData.addAttribute(attrMesh);
   tagReadData.addAttribute(attrMesh);
 
@@ -321,14 +320,14 @@ void ParticipantConfiguration::xmlTagCallback(
   } else if (tag.getName() == TAG_WRITE) {
     const std::string &dataName = tag.getStringAttributeValue(ATTR_NAME);
     std::string        meshName = tag.getStringAttributeValue(ATTR_MESH);
-    mesh::PtrMesh      mesh     = _meshConfig->getMesh(meshName);
-    if (!(mesh)) { // no mesh implies it's global data
+    if (meshName.empty()) { // no mesh implies it's global data
       mesh::PtrGlobalData data = getGlobalData(dataName);
       _participants.back()->addGlobalData(data, "write");
     } else {
-      // PRECICE_CHECK(mesh,
-      //               "Participant \"{}\" has to use mesh \"{}\" in order to write data to it. Please add a use-mesh node with name=\"{}\".",
-      //               _participants.back()->getName(), meshName, meshName);
+      mesh::PtrMesh mesh = _meshConfig->getMesh(meshName);
+      PRECICE_CHECK(mesh,
+                    "Participant \"{}\" has to use mesh \"{}\" in order to write data to it. Please add a use-mesh node with name=\"{}\".",
+                    _participants.back()->getName(), meshName, meshName);
       mesh::PtrData data = getData(mesh, dataName);
       _participants.back()->addWriteData(data, mesh);
     }
@@ -344,13 +343,14 @@ void ParticipantConfiguration::xmlTagCallback(
     if (waveformOrder < time::Time::MIN_INTERPOLATION_ORDER || waveformOrder > time::Time::MAX_INTERPOLATION_ORDER) {
       PRECICE_ERROR("You tried to configure the read data with name \"{}\" to use the waveform-order=\"{}\", but the order must be between \"{}\" and \"{}\". Please use an order in the allowed range.", dataName, waveformOrder, time::Time::MIN_INTERPOLATION_ORDER, time::Time::MAX_INTERPOLATION_ORDER);
     }
-    if (!(mesh)) { // no mesh implies it's global data
+    if (meshName.empty()) { // no mesh implies it's global data
       mesh::PtrGlobalData data = getGlobalData(dataName);
       _participants.back()->addGlobalData(data, "read", waveformOrder);
     } else {
-      // PRECICE_CHECK(mesh,
-      //               "Participant \"{}\" has to use mesh \"{}\" in order to read data from it. Please add a use-mesh node with name=\"{}\".",
-      //               _participants.back()->getName(), meshName, meshName);
+      mesh::PtrMesh mesh = _meshConfig->getMesh(meshName);
+      PRECICE_CHECK(mesh,
+                    "Participant \"{}\" has to use mesh \"{}\" in order to read data from it. Please add a use-mesh node with name=\"{}\".",
+                    _participants.back()->getName(), meshName, meshName);
       mesh::PtrData data = getData(mesh, dataName);
       _participants.back()->addReadData(data, mesh, waveformOrder);
     }
@@ -416,6 +416,12 @@ const mesh::PtrData &ParticipantConfiguration::getData(
     const mesh::PtrMesh &mesh,
     const std::string &  nameData) const
 {
+  // if getData is called for global data, then the config file must incorrectly have a mesh name with the global data.
+  PRECICE_CHECK(!(_meshConfig->getDataConfiguration()->hasGlobalDataName(nameData)),
+                "Participant \"{}\" specifies mesh name \"{}\" for global data \"{}\", but global data are not associated with meshes. "
+                "Please remove mesh=\"{}\".",
+                _participants.back()->getName(), mesh->getName(), nameData, mesh->getName());
+
   PRECICE_CHECK(mesh->hasDataName(nameData),
                 "Participant \"{}\" asks for data \"{}\" from mesh \"{}\", but this mesh does not use such data. "
                 "Please add a use-data tag with name=\"{}\" to this mesh.",
