@@ -94,11 +94,16 @@ void DataConfiguration::xmlTagCallback(
     int                dataDimensions = getDataDimensions(typeName);
     addData(name, dataDimensions, isGlobal);
   } else if (tag.getNamespace() == TAG_GLOBAL_DATA) {
+
     const bool isGlobal = true;
     PRECICE_ASSERT(_dimensions != 0);
     const std::string &name           = tag.getStringAttributeValue(ATTR_NAME);
     const std::string &typeName       = tag.getName();
     int                dataDimensions = getDataDimensions(typeName);
+    if (!_experimental) {
+      PRECICE_ERROR("You tried to configure \"{}\" as global data, which is currently still experimental. Please set experimental=\"true\", if you want to use this feature.", name);
+    }
+    PRECICE_WARN("You configured \"{}\" as global data, which is currently still experimental. Use with care.", name);
     addData(name, dataDimensions, isGlobal);
     createGlobalData(name, dataDimensions, _dataIDManager.getFreeID());
   } else {
@@ -152,6 +157,12 @@ int DataConfiguration::getDataDimensions(
   }
   // We should never reach this point
   PRECICE_UNREACHABLE("Unknown data type \"{}\".", typeName);
+}
+
+void DataConfiguration::setExperimental(
+    bool experimental)
+{
+  _experimental = experimental;
 }
 
 } // namespace precice::mesh
