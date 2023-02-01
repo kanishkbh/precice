@@ -119,11 +119,11 @@ bool SolverInterface::hasData(::precice::string_view meshName, ::precice::string
 }
 
 
-bool SolverInterface::hasGlobalData(
-    const std::string &dataName) const
-{
-  return _impl->hasGlobalData(dataName);
-}
+// bool SolverInterface::hasGlobalData(
+//     const std::string &dataName) const
+// {
+//   return _impl->hasGlobalData(dataName);
+// }
 
 int SolverInterface::getGlobalDataID(
     const std::string &dataName) const
