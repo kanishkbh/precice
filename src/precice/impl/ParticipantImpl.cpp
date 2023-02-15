@@ -337,6 +337,21 @@ void ParticipantImpl::initialize()
   mapReadData();
   performDataActions({action::Action::READ_MAPPING_POST}, 0.0);
 
+  for (auto &context : _accessor->readDataContexts()) {
+    context.moveToNextWindow();
+  }
+
+  for (auto &context : _accessor->globalDataContexts()) {
+    context.moveToNextWindow();
+  }
+
+  _couplingScheme->receiveResultOfFirstAdvance();
+
+  if (_couplingScheme->hasDataBeenReceived()) {
+    mapReadData();
+    performDataActions({action::Action::READ_MAPPING_POST}, 0.0);
+  }
+
   resetWrittenData(false, false);
   PRECICE_DEBUG("Plot output");
   _accessor->exportFinal();
@@ -556,7 +571,7 @@ bool SolverInterfaceImpl::hasGlobalData(
 int SolverInterfaceImpl::getGlobalDataID(
     const std::string &dataName) const
 {
-  PRECICE_TRACE(dataName);
+  // PRECICE_TRACE(dataName);
   return _accessor->getUsedGlobalDataID(dataName);
 }
 
