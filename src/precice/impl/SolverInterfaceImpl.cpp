@@ -431,6 +431,9 @@ double SolverInterfaceImpl::advance(
     for (auto &context : _accessor->readDataContexts()) {
       context.moveToNextWindow();
     }
+    for (auto &context : _accessor->globalDataContexts()) {
+      context.moveToNextWindow();
+    }
   }
 
   if (_couplingScheme->hasDataBeenReceived()) {
@@ -1202,9 +1205,9 @@ void SolverInterfaceImpl::writeGlobalScalarData(
   //               "Cannot write data \"{}\" to invalid Vertex ID ({}). "
   //               "Please make sure you only use the results from calls to setMeshVertex/Vertices().",
   //               context.getDataName(), valueIndex);
-  valuesInternal[0] = value;
-
-  PRECICE_DEBUG("Written scalar value = {}", value);
+  valuesInternal[0]        = value;
+  double valueVerification = valuesInternal[0];
+  PRECICE_DEBUG("Written scalar value = {}", valueVerification);
 }
 
 void SolverInterfaceImpl::writeScalarGradientData(
