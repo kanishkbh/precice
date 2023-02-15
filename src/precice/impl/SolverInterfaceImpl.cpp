@@ -344,6 +344,10 @@ double SolverInterfaceImpl::initialize()
   for (auto &context : _accessor->readDataContexts()) {
     context.initializeWaveform();
   }
+  for (auto &context : _accessor->globalDataContexts()) {
+    context.initializeWaveform();
+  }
+
   _meshLock.lockAll();
 
   if (_couplingScheme->sendsInitializedData()) {
@@ -363,6 +367,10 @@ double SolverInterfaceImpl::initialize()
   }
 
   for (auto &context : _accessor->readDataContexts()) {
+    context.moveToNextWindow();
+  }
+
+  for (auto &context : _accessor->globalDataContexts()) {
     context.moveToNextWindow();
   }
 
@@ -631,7 +639,7 @@ int SolverInterfaceImpl::getDataID(
 int SolverInterfaceImpl::getGlobalDataID(
     const std::string &dataName) const
 {
-  PRECICE_TRACE(dataName);
+  // PRECICE_TRACE(dataName);
   return _accessor->getUsedGlobalDataID(dataName);
 }
 
