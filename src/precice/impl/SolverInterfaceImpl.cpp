@@ -1143,7 +1143,8 @@ void SolverInterfaceImpl::writeGlobalVectorData(
   // TODO: check which macros won't work for Global Data and create another implementation for them.
   PRECICE_TRACE(dataID);
   PRECICE_CHECK(_state != State::Finalized, "writeVectorData(...) cannot be called after finalize().");
-  PRECICE_REQUIRE_DATA_WRITE(dataID);
+  // PRECICE_REQUIRE_DATA_WRITE(dataID);
+  // TODO: write an analog of this for global.
   PRECICE_DEBUG("value = {}", Eigen::Map<const Eigen::VectorXd>(value, _dimensions).format(utils::eigenio::debug()));
   GlobalDataContext &context = _accessor->globalDataContext(dataID);
   PRECICE_ASSERT(context.providedData() != nullptr);
@@ -1171,7 +1172,7 @@ void SolverInterfaceImpl::writeGlobalScalarData(
 {
   PRECICE_TRACE(dataID, value);
   PRECICE_CHECK(_state != State::Finalized, "writeGlobalScalarData(...) cannot be called after finalize().");
-  PRECICE_REQUIRE_DATA_WRITE(dataID);
+  // PRECICE_REQUIRE_DATA_WRITE(dataID); TODO write global data analog for this
   GlobalDataContext &context = _accessor->globalDataContext(dataID);
   PRECICE_ASSERT(context.providedData() != nullptr);
   // PRECICE_CHECK(valueIndex >= -1,
@@ -1298,7 +1299,8 @@ void SolverInterfaceImpl::readGlobalScalarDataImpl(
     PRECICE_CHECK(relativeReadTime == _couplingScheme->getThisTimeWindowRemainder(), "Waveform relaxation is not allowed for solver that sets the time step size");
     normalizedReadTime = 1; // by default read at end of window.
   }
-  PRECICE_REQUIRE_DATA_READ(dataID);
+  // PRECICE_REQUIRE_DATA_READ(dataID);
+  // TODO: write an analog of this for global.
   GlobalDataContext &context = _accessor->globalDataContext(dataID);
   // PRECICE_CHECK(valueIndex >= -1,
   //               "Invalid value index ( {} ) when reading scalar data. Value index must be >= 0. "
