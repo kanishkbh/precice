@@ -95,25 +95,30 @@ bool SerialCouplingScheme::exchangeDataAndAccelerate()
     PRECICE_DEBUG("Sending data...");
     sendTimeWindowSize();
     sendData(getM2N(), getSendData());
+    sendGlobalData(getM2N(), getSendGlobalData());
     PRECICE_DEBUG("Receiving data...");
     if (isImplicitCouplingScheme()) {
       convergence = receiveConvergence(getM2N());
     }
     receiveData(getM2N(), getReceiveData());
+    receiveGlobalData(getM2N(), getReceiveGlobalData());
     checkDataHasBeenReceived();
   } else { // second participant
     if (isImplicitCouplingScheme()) {
+      // TODO: global data stuff here?
       PRECICE_DEBUG("Test Convergence and accelerate...");
       convergence = doImplicitStep();
       sendConvergence(getM2N(), convergence);
     }
     PRECICE_DEBUG("Sending data...");
     sendData(getM2N(), getSendData());
+    sendGlobalData(getM2N(), getSendGlobalData());
     // the second participant does not want new data in the last iteration of the last time window
     if (isCouplingOngoing() || (isImplicitCouplingScheme() && not convergence)) {
       receiveAndSetTimeWindowSize();
       PRECICE_DEBUG("Receiving data...");
       receiveData(getM2N(), getReceiveData());
+      receiveGlobalData(getM2N(), getReceiveGlobalData());
       checkDataHasBeenReceived();
     }
   }
