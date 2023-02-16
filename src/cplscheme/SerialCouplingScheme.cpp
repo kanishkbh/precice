@@ -126,10 +126,12 @@ void SerialCouplingScheme::exchangeFirstData()
       PRECICE_DEBUG("Sending data...");
       sendTimeWindowSize();
       sendData(getM2N(), getSendData());
+      sendGlobalData(getM2N(), getSendGlobalData());
     } else {              // second participant
       moveToNextWindow(); // do moveToNextWindow already here for second participant in SerialCouplingScheme
       PRECICE_DEBUG("Sending data...");
       sendData(getM2N(), getSendData());
+      sendGlobalData(getM2N(), getSendGlobalData());
     }
   } else {
     PRECICE_ASSERT(isImplicitCouplingScheme());
@@ -138,6 +140,7 @@ void SerialCouplingScheme::exchangeFirstData()
       PRECICE_DEBUG("Sending data...");
       sendTimeWindowSize();
       sendData(getM2N(), getSendData());
+      sendGlobalData(getM2N(), getSendGlobalData());
     } else { // second participant
       PRECICE_DEBUG("Perform acceleration (only second participant)...");
       doImplicitStep();
@@ -148,6 +151,7 @@ void SerialCouplingScheme::exchangeFirstData()
       }
       PRECICE_DEBUG("Sending data...");
       sendData(getM2N(), getSendData());
+      sendGlobalData(getM2N(), getSendGlobalData());
     }
   }
 }
@@ -159,6 +163,7 @@ void SerialCouplingScheme::exchangeSecondData()
       moveToNextWindow();  // extrapolation result for receive data of first is directly overwritten in the call of receiveData below
       PRECICE_DEBUG("Receiving data...");
       receiveData(getM2N(), getReceiveData());
+      receiveGlobalData(getM2N(), getReceiveGlobalData());
       checkDataHasBeenReceived();
     }
 
@@ -168,6 +173,7 @@ void SerialCouplingScheme::exchangeSecondData()
         receiveAndSetTimeWindowSize();
         PRECICE_DEBUG("Receiving data...");
         receiveData(getM2N(), getReceiveData());
+        receiveGlobalData(getM2N(), getReceiveGlobalData());
         checkDataHasBeenReceived();
       }
     }
@@ -182,6 +188,7 @@ void SerialCouplingScheme::exchangeSecondData()
       }
       PRECICE_DEBUG("Receiving data...");
       receiveData(getM2N(), getReceiveData());
+      receiveGlobalData(getM2N(), getReceiveGlobalData());
       checkDataHasBeenReceived();
     }
 
@@ -193,6 +200,7 @@ void SerialCouplingScheme::exchangeSecondData()
         receiveAndSetTimeWindowSize();
         PRECICE_DEBUG("Receiving data...");
         receiveData(getM2N(), getReceiveData());
+        receiveGlobalData(getM2N(), getReceiveGlobalData());
         checkDataHasBeenReceived();
       }
     }
