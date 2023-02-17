@@ -46,6 +46,7 @@ void MultiCouplingScheme::determineInitialDataExchange()
   for (auto &receiveExchange : _receiveDataVector) {
     determineInitialReceive(receiveExchange.second);
   }
+  // TODO add global data here
 }
 
 std::vector<std::string> MultiCouplingScheme::getCouplingPartners() const

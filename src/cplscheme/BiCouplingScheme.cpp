@@ -70,6 +70,26 @@ void BiCouplingScheme::addDataToSend(
   }
 }
 
+void BiCouplingScheme::addGlobalDataToSend(
+    const mesh::PtrGlobalData &globalData,
+    bool                       requiresInitialization)
+{
+  PRECICE_TRACE();
+  int id = globalData->getID();
+  if (!utils::contained(id, _sendGlobalData)) {
+    PRECICE_ASSERT(_sendGlobalData.count(id) == 0, "Key already exists!");
+    if (isExplicitCouplingScheme()) {
+      _sendGlobalData.emplace(id, std::make_shared<GlobalCouplingData>(globalData, requiresInitialization));
+      PRECICE_DEBUG("Added \"{}\" to _sendGlobalData. Now _sendGlobalData.size is {}.", globalData->getName(), _sendGlobalData.size());
+    } else {
+      _sendGlobalData.emplace(id, std::make_shared<GlobalCouplingData>(globalData, requiresInitialization, getExtrapolationOrder()));
+      PRECICE_DEBUG("Added \"{}\" to _sendGlobalData with extrapolation order.", globalData->getName());
+    }
+  } else {
+    PRECICE_ERROR("Data \"{0}\" cannot be added twice for sending. Please remove any duplicate <exchange data=\"{0}\" .../> tags", globalData->getName());
+  }
+}
+
 void BiCouplingScheme::addDataToReceive(
     const mesh::PtrData &data,
     mesh::PtrMesh        mesh,
@@ -89,10 +109,33 @@ void BiCouplingScheme::addDataToReceive(
   }
 }
 
+void BiCouplingScheme::addGlobalDataToReceive(
+    const mesh::PtrGlobalData &globalData,
+    bool                       requiresInitialization)
+{
+  PRECICE_TRACE();
+  int id = globalData->getID();
+  if (!utils::contained(id, _receiveGlobalData)) {
+    PRECICE_ASSERT(_receiveGlobalData.count(id) == 0, "Key already exists!");
+    if (isExplicitCouplingScheme()) {
+      _receiveGlobalData.emplace(id, std::make_shared<GlobalCouplingData>(globalData, requiresInitialization));
+      PRECICE_DEBUG("Added \"{}\" to _receiveGlobalData.", globalData->getName());
+
+    } else {
+      _receiveGlobalData.emplace(id, std::make_shared<GlobalCouplingData>(globalData, requiresInitialization, getExtrapolationOrder()));
+      PRECICE_DEBUG("Added \"{}\" to _sendGlobalData with extrapolation order.", globalData->getName());
+    }
+  } else {
+    PRECICE_ERROR("Data \"{0}\" cannot be added twice for receiving. Please remove any duplicate <exchange data=\"{0}\" ... /> tags", globalData->getName());
+  }
+}
+
 void BiCouplingScheme::determineInitialDataExchange()
 {
   determineInitialSend(getSendData());
+  determineInitialSend(getSendGlobalData());
   determineInitialReceive(getReceiveData());
+  determineInitialReceive(getReceiveGlobalData());
 }
 
 std::vector<std::string> BiCouplingScheme::getCouplingPartners() const
@@ -135,18 +178,22 @@ void BiCouplingScheme::exchangeInitialData()
   if (doesFirstStep()) {
     if (sendsInitializedData()) {
       sendData(getM2N(), getSendData());
+      sendGlobalData(getM2N(), getSendGlobalData());
     }
     if (receivesInitializedData()) {
       receiveData(getM2N(), getReceiveData());
+      receiveGlobalData(getM2N(), getReceiveGlobalData());
       checkDataHasBeenReceived();
     }
   } else { // second participant
     if (receivesInitializedData()) {
       receiveData(getM2N(), getReceiveData());
+      receiveGlobalData(getM2N(), getReceiveGlobalData());
       checkDataHasBeenReceived();
     }
     if (sendsInitializedData()) {
       sendData(getM2N(), getSendData());
+      sendGlobalData(getM2N(), getSendGlobalData());
     }
   }
 }
