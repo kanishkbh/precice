@@ -1586,6 +1586,15 @@ void SolverInterfaceImpl::mapReadData()
     }
     context.storeDataInWaveform();
   }
+  clearMappings(_accessor->readMappingContexts());
+
+  for (auto &context : _accessor->globalDataContexts()) {
+    if (context.getDirection() == "read") {
+      PRECICE_DEBUG("Store read global data \"{}\" in Waveform ", context.getDataName());
+      // context.mapData();
+      context.storeDataInWaveform();
+    }
+  }
 }
 
 void SolverInterfaceImpl::performDataActions(
