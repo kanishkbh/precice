@@ -382,10 +382,22 @@ protected:
   void determineInitialSend(DataMap &sendData);
 
   /**
+   * @brief Sets _sendsInitializedData, if sendGlobalData requires initialization
+   * @param sendGlobalData GlobalCouplingData being checked
+   */
+  void determineInitialSend(GlobalDataMap &sendGlobalData);
+
+  /**
    * @brief Sets _receivesInitializedData, if receiveData requires initialization
    * @param receiveData CouplingData being checked
    */
   void determineInitialReceive(DataMap &receiveData);
+
+  /**
+   * @brief Sets _receivesInitializedData, if receiveGlobalData requires initialization
+   * @param receiveGlobalData GlobalCouplingData being checked
+   */
+  void determineInitialReceive(GlobalDataMap &receiveGlobalData);
 
   /**
    * @brief getter for _extrapolationOrder
@@ -590,6 +602,13 @@ private:
    * @return true, if any CouplingData in dataMap requires initialization
    */
   bool anyDataRequiresInitialization(DataMap &dataMap) const;
+
+  /**
+   * @brief Checks whether any GlobalCouplingData in globalDataMap requires initialization
+   * @param globalDataMap map containing GlobalCouplingData
+   * @return true, if any GlobalCouplingData in globalDataMap requires initialization
+   */
+  bool anyDataRequiresInitialization(GlobalDataMap &globalDataMap) const;
 };
 } // namespace cplscheme
 } // namespace precice
