@@ -90,6 +90,16 @@ public:
    */
   void moveToNextWindow();
 
+  /**
+   * @brief Return the direction (read or write) for this GlobalDataContext.
+   */
+  std::string getDirection();
+
+  /**
+   * @brief Stores _providedData as first sample of _waveform.
+   */
+  void storeDataInWaveform();
+
 private:
   static logging::Logger _log;
 
@@ -99,6 +109,7 @@ private:
   /// Whether this is "read" context or "write" context
   std::string _direction;
 
+  /// Waveform wrapped by this GlobalDataContext.
   time::PtrWaveform _waveform;
 };
 
