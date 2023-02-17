@@ -126,19 +126,7 @@ void BaseCouplingScheme::receiveData(const m2n::PtrM2N &m2n, const DataMap &rece
   }
 }
 
-PtrCouplingData BaseCouplingScheme::addCouplingData(const mesh::PtrData &data, mesh::PtrMesh mesh, bool requiresInitialization)
-{
-  int             id = data->getID();
-  PtrCouplingData ptrCplData;
-  if (!utils::contained(id, _allData)) { // data is not used by this coupling scheme yet, create new CouplingData
-    if (isExplicitCouplingScheme()) {
-      ptrCplData = std::make_shared<CouplingData>(data, std::move(mesh), requiresInitialization);
-    } else {
-      ptrCplData = std::make_shared<CouplingData>(data, std::move(mesh), requiresInitialization, getExtrapolationOrder());
-    }
-    _allData.emplace(id, ptrCplData);
-  } else { // data is already used by another exchange of this coupling scheme, use existing CouplingData
-    ptrCplData = _allData[id];
+    receivedDataIDs.push_back(pair.first);
   }
   return ptrCplData;
 }
@@ -155,13 +143,12 @@ void BaseCouplingScheme::sendGlobalData(const m2n::PtrM2N &m2n, const GlobalData
   std::vector<int> sentGlobalDataIDs; // for debugging
   PRECICE_ASSERT(m2n.get() != nullptr);
   PRECICE_ASSERT(m2n->isConnected());
-
   for (const GlobalDataMap::value_type &pair : sendGlobalData) {
     // Data is actually only send if size>0, which is checked in the derived classes implementation
     m2n->send(pair.second->values(), -1, pair.second->getDimensions()); // TODO meshID=-1 is a makeshift thing here. Fix this.
     sentGlobalDataIDs.push_back(pair.first);                            // Keep track of sent data (for degbugging)
   }
-  PRECICE_DEBUG("Number of sent global data sets = {}", sentGlobalDataIDs.size());
+  PRECICE_DEBUG("Number of sent data sets (global) = {}", sentGlobalDataIDs.size());
 }
 
 void BaseCouplingScheme::receiveGlobalData(const m2n::PtrM2N &m2n, const GlobalDataMap &receiveGlobalData)
@@ -175,7 +162,7 @@ void BaseCouplingScheme::receiveGlobalData(const m2n::PtrM2N &m2n, const GlobalD
     m2n->receive(pair.second->values(), -1, pair.second->getDimensions()); // TODO meshID=-1 is a makeshift thing here. Fix this.
     receivedGlobalDataIDs.push_back(pair.first);                           // Keep track of received data (for debugging)
   }
-  PRECICE_DEBUG("Number of received global data sets = {}", receivedGlobalDataIDs.size());
+  PRECICE_DEBUG("Number of received data sets (global) = {}", receivedGlobalDataIDs.size());
 }
 
 void BaseCouplingScheme::setTimeWindowSize(double timeWindowSize)
@@ -736,11 +723,28 @@ void BaseCouplingScheme::determineInitialSend(DataMap &sendData)
   }
 }
 
+void BaseCouplingScheme::determineInitialSend(BaseCouplingScheme::GlobalDataMap &sendGlobalData)
+{
+  if (anyDataRequiresInitialization(sendGlobalData)) {
+    _sendsInitializedData = true;
+    requireAction(constants::actionWriteInitialData());
+  }
+  //TODO test this
+}
+
 void BaseCouplingScheme::determineInitialReceive(DataMap &receiveData)
 {
   if (anyDataRequiresInitialization(receiveData)) {
     _receivesInitializedData = true;
   }
+}
+
+void BaseCouplingScheme::determineInitialReceive(BaseCouplingScheme::GlobalDataMap &receiveGlobalData)
+{
+  if (anyDataRequiresInitialization(receiveGlobalData)) {
+    _receivesInitializedData = true;
+  }
+  //TODO test this
 }
 
 int BaseCouplingScheme::getExtrapolationOrder()
@@ -757,6 +761,19 @@ bool BaseCouplingScheme::anyDataRequiresInitialization(DataMap &dataMap) const
     }
   }
   return false;
+}
+
+bool BaseCouplingScheme::anyDataRequiresInitialization(BaseCouplingScheme::GlobalDataMap &globalDataMap) const
+{
+  /// @todo implement this function using https://en.cppreference.com/w/cpp/algorithm/all_any_none_of
+  for (GlobalDataMap::value_type &pair : globalDataMap) {
+    if (pair.second->requiresInitialization) {
+      PRECICE_ERROR("Initilialization for global data exchange is not tested yet.");
+      return true;
+    }
+  }
+  return false;
+  //TODO test this
 }
 
 void BaseCouplingScheme::doImplicitStep()
