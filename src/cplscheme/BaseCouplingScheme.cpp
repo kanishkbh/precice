@@ -126,7 +126,19 @@ void BaseCouplingScheme::receiveData(const m2n::PtrM2N &m2n, const DataMap &rece
   }
 }
 
-    receivedDataIDs.push_back(pair.first);
+PtrCouplingData BaseCouplingScheme::addCouplingData(const mesh::PtrData &data, mesh::PtrMesh mesh, bool requiresInitialization)
+{
+  int             id = data->getID();
+  PtrCouplingData ptrCplData;
+  if (!utils::contained(id, _allData)) { // data is not used by this coupling scheme yet, create new CouplingData
+    if (isExplicitCouplingScheme()) {
+      ptrCplData = std::make_shared<CouplingData>(data, std::move(mesh), requiresInitialization);
+    } else {
+      ptrCplData = std::make_shared<CouplingData>(data, std::move(mesh), requiresInitialization, getExtrapolationOrder());
+    }
+    _allData.emplace(id, ptrCplData);
+  } else { // data is already used by another exchange of this coupling scheme, use existing CouplingData
+    ptrCplData = _allData[id];
   }
   return ptrCplData;
 }
@@ -727,7 +739,7 @@ void BaseCouplingScheme::determineInitialSend(BaseCouplingScheme::GlobalDataMap 
 {
   if (anyDataRequiresInitialization(sendGlobalData)) {
     _sendsInitializedData = true;
-    requireAction(constants::actionWriteInitialData());
+    requireAction(CouplingScheme::Action::InitializeData);
   }
   //TODO test this
 }
