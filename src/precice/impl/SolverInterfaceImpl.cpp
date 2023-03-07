@@ -1586,7 +1586,6 @@ void SolverInterfaceImpl::mapReadData()
     }
     context.storeDataInWaveform();
   }
-  clearMappings(_accessor->readMappingContexts());
 
   for (auto &context : _accessor->globalDataContexts()) {
     if (context.getDirection() == "read") {
