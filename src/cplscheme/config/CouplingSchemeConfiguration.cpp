@@ -506,6 +506,8 @@ void CouplingSchemeConfiguration::addTransientLimitTags(
                           .setOptions({VALUE_FIXED, VALUE_FIRST_PARTICIPANT})
                           .setDocumentation("The method used to determine the time window size. Use `fixed` to fix the time window size for the participants.");
     tagTimeWindowSize.addAttribute(attrMethod);
+  } else {
+    tagTimeWindowSize.addAttributeHint(ATTR_METHOD, "This feature is only available for serial coupling schemes.");
   }
   tag.addSubtag(tagTimeWindowSize);
 }
@@ -994,6 +996,12 @@ void CouplingSchemeConfiguration::addDataToBeExchanged(
                   to, dataName, meshName, from, to);
 
     const bool requiresInitialization = exchange.requiresInitialization;
+    PRECICE_CHECK(
+        !(requiresInitialization && _participantConfig->getParticipant(from)->isDirectAccessAllowed(exchange.mesh->getID())),
+        "Participant \"{}\" cannot initialize data of the directly-accessed mesh \"{}\" from the participant\"{}\". "
+        "Either disable the initialization in the <exchange /> tag or use a locally provided mesh instead.",
+        from, meshName, to);
+
     if (from == accessor) {
       scheme.addDataToSend(exchange.data, exchange.mesh, requiresInitialization);
     } else if (to == accessor) {
