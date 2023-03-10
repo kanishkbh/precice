@@ -350,6 +350,7 @@ void BaseCouplingScheme::moveToNextWindow()
   for (auto &data : _allData | boost::adaptors::map_values) {
     data->moveToNextWindow();
   }
+  // TODO: Add global data here?
 }
 
 bool BaseCouplingScheme::hasTimeWindowSize() const
@@ -715,6 +716,9 @@ void BaseCouplingScheme::storeIteration()
 {
   PRECICE_ASSERT(isImplicitCouplingScheme());
   for (const auto &data : _allData | boost::adaptors::map_values) {
+    data->storeIteration();
+  }
+  for (const auto &data : _allGlobalData | boost::adaptors::map_values) {
     data->storeIteration();
   }
 }
