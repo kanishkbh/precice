@@ -209,6 +209,9 @@ public:
     for (auto &context : _readDataContexts | boost::adaptors::map_values) {
       maxOrder = std::max(maxOrder, context.getInterpolationOrder());
     }
+    for (auto &context : _globalDataContexts | boost::adaptors::map_values) {
+      maxOrder = std::max(maxOrder, context.getInterpolationOrder());
+    }
     return maxOrder;
   }
 
@@ -423,6 +426,8 @@ private:
   void checkDuplicatedUse(const mesh::PtrMesh &mesh);
 
   void checkDuplicatedData(const mesh::PtrData &data, const std::string &meshName);
+
+  void checkDuplicatedGlobalData(const mesh::PtrGlobalData &data);
 
   /// To allow white box tests.
   friend struct Integration::Serial::Whitebox::TestConfigurationPeano;

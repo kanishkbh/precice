@@ -345,6 +345,9 @@ void BaseCouplingScheme::storeExtrapolationData()
   for (auto &data : _allData | boost::adaptors::map_values) {
     data->storeExtrapolationData();
   }
+  for (auto &data : _allGlobalData | boost::adaptors::map_values) {
+    data->storeExtrapolationData();
+  }
 }
 
 void BaseCouplingScheme::moveToNextWindow()
@@ -357,6 +360,7 @@ void BaseCouplingScheme::moveToNextWindow()
   for (auto &pair : getAccelerationData()) {
     PRECICE_DEBUG("Store data: {}", pair.first);
     pair.second->moveToNextWindow();
+    // TODO: Add global data here.
   }
 }
 
@@ -577,6 +581,9 @@ void BaseCouplingScheme::initializeStorages()
   for (auto &data : _allData | boost::adaptors::map_values) {
     data->initializeExtrapolation();
   }
+  for (auto &data : _allGlobalData | boost::adaptors::map_values) {
+    data->initializeExtrapolation();
+  }
   // Reserve storage for acceleration
   if (_acceleration) {
     _acceleration->initialize(getAccelerationData());
@@ -730,6 +737,9 @@ void BaseCouplingScheme::storeIteration()
 {
   PRECICE_ASSERT(isImplicitCouplingScheme());
   for (const auto &data : _allData | boost::adaptors::map_values) {
+    data->storeIteration();
+  }
+  for (const auto &data : _allGlobalData | boost::adaptors::map_values) {
     data->storeIteration();
   }
 }
