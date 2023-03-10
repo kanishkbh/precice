@@ -127,9 +127,7 @@ void Participant::addGlobalData(
     std::string                direction,
     int                        interpolationOrder)
 {
-  // checkDuplicatedData(data, mesh->getName());
-  //TODO: add support for global data in checkDuplicatedData
-  // EDITED
+  checkDuplicatedGlobalData(data);
   _globalDataContexts.emplace(data->getID(), GlobalDataContext(data, direction, interpolationOrder));
 }
 
@@ -502,6 +500,15 @@ std::string ParticipantState::hintForMeshData(std::string_view mesh, std::string
   }
 
   return fmt::format(" Available data are: {}", fmt::join(localData, ", "));
+}
+
+void Participant::checkDuplicatedGlobalData(const mesh::PtrGlobalData &data)
+{
+  bool isDataGlobal = _globalDataContexts.count(data->getID()) > 0;
+  PRECICE_CHECK(!isDataGlobal,
+                "Participant \"{}\" can read/write global data \"{}\" only once. "
+                "Please remove any duplicate instances of write-data/read-data nodes.",
+                _name, data->getName());
 }
 
 } // namespace precice::impl
