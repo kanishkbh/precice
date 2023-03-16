@@ -115,6 +115,7 @@ void SerialCouplingScheme::exchangeInitialData()
     receiveAndSetTimeWindowSize();
     PRECICE_DEBUG("Receiving data...");
     receiveData(getM2N(), getReceiveData());
+    receiveGlobalData(getM2N(), getReceiveGlobalData());
     checkDataHasBeenReceived();
   }
 }
