@@ -278,8 +278,6 @@ void CouplingSchemeConfiguration::xmlTagCallback(
       PRECICE_CHECK(!_config.hasGlobalExchange(newGlobalExchange),
                     R"(Data "{}" cannot be exchanged multiple times between participants "{}" and "{}". Please remove one of the exchange tags.)",
                     nameData, nameParticipantFrom, nameParticipantTo);
-      // _meshConfig->addNeededMesh(nameParticipantFrom, nameMesh);
-      // _meshConfig->addNeededMesh(nameParticipantTo, nameMesh);
       _config.globalExchanges.emplace_back(std::move(newGlobalExchange));
 
     } else {
