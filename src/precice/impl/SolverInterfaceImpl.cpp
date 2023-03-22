@@ -609,14 +609,6 @@ bool SolverInterfaceImpl::hasData(
   return _accessor->isDataUsed(dataName, meshID);
 }
 
-// bool SolverInterfaceImpl::hasGlobalData(
-//     const std::string &dataName) const
-// {
-//   PRECICE_TRACE(dataName);
-//   // PRECICE_VALIDATE_MESH_ID(meshID);
-//   return _accessor->isGlobalDataUsed(dataName);
-// }
-
 int SolverInterfaceImpl::getDataID(
     const std::string &dataName, MeshID meshID) const
 {
@@ -632,7 +624,7 @@ int SolverInterfaceImpl::getDataID(
 int SolverInterfaceImpl::getGlobalDataID(
     const std::string &dataName) const
 {
-  // PRECICE_TRACE(dataName);
+  PRECICE_TRACE(dataName);
   return _accessor->getUsedGlobalDataID(dataName);
 }
 
@@ -1089,7 +1081,6 @@ void SolverInterfaceImpl::writeGlobalVectorData(
     // int           valueIndex,
     const double *value)
 {
-  // TODO: check which macros won't work for Global Data and create another implementation for them.
   PRECICE_TRACE(dataID);
   PRECICE_CHECK(_state != State::Finalized, "writeVectorData(...) cannot be called after finalize().");
   // PRECICE_REQUIRE_DATA_WRITE(dataID);
@@ -1106,12 +1097,8 @@ void SolverInterfaceImpl::writeGlobalVectorData(
   auto &            valuesInternal = data.values();
   const auto        vertexCount    = valuesInternal.size() / context.getDataDimensions(); // Should be 1. // TODO We can probably remove this line.
   PRECICE_CHECK(vertexCount == 1, "vertexCount = {} , should be 1", vertexCount);
-  // PRECICE_CHECK(0 <= valueIndex && valueIndex < vertexCount,
-  //               "Cannot write data \"{}\" to invalid Vertex ID ({}). Please make sure you only use the results from calls to setMeshVertex/Vertices().",
-  //               context.getDataName(), valueIndex);
-  // const int offset = valueIndex * _dimensions;
+
   for (int dim = 0; dim < _dimensions; dim++) {
-    // values[offset + dim] = value[dim];
     valuesInternal[dim] = value[dim];
   }
 }
@@ -1189,26 +1176,15 @@ void SolverInterfaceImpl::writeGlobalScalarData(
   // PRECICE_REQUIRE_DATA_WRITE(dataID); TODO write global data analog for this
   GlobalDataContext &context = _accessor->globalDataContext(dataID);
   PRECICE_ASSERT(context.providedData() != nullptr);
-  // PRECICE_CHECK(valueIndex >= -1,
-  //               "Invalid value index ({}) when writing scalar data. Value index must be >= 0. "
-  //               "Please check the value index for {}",
-  //               valueIndex, context.getDataName());
   PRECICE_CHECK(context.getDataDimensions() == 1,
                 "You cannot call writeGlobalScalarData on the vector data type \"{0}\". "
                 "Use writeGlobalVectorData or change the data type for \"{0}\" to scalar.",
                 context.getDataName());
   PRECICE_VALIDATE_DATA(static_cast<double *>(&value), 1);
-
-  // mesh::Data &data        = *context.providedData();
   mesh::GlobalData &data           = *context.providedData();
   auto &            valuesInternal = data.values();
-  // PRECICE_CHECK(0 <= valueIndex && valueIndex < vertexCount,
-  //               "Cannot write data \"{}\" to invalid Vertex ID ({}). "
-  //               "Please make sure you only use the results from calls to setMeshVertex/Vertices().",
-  //               context.getDataName(), valueIndex);
-  valuesInternal[0]        = value;
-  double valueVerification = valuesInternal[0];
-  PRECICE_DEBUG("Written global scalar value = {}", valueVerification);
+  valuesInternal[0]                = value;
+  PRECICE_DEBUG("Written global scalar value = {}", valuesInternal[0]);
 }
 
 void SolverInterfaceImpl::writeScalarGradientData(
@@ -1527,7 +1503,7 @@ void SolverInterfaceImpl::readGlobalVectorData(
   PRECICE_TRACE(dataID);
   double relativeTimeWindowEndTime = _couplingScheme->getNextTimestepMaxLength(); // samples at end of time window
   if (_accessor->globalDataContext(dataID).getInterpolationOrder() != 0) {
-    PRECICE_WARN("Interpolation order of global data named \"{}\" is set to \"{}\", but you are calling {} without providing a relativeReadTime. This looks like an error. You can fix this by providing a relativeReadTime to {} or by setting interpolation order to 0.",
+    PRECICE_WARN("Interpolation order of read global vector-data named \"{}\" is set to \"{}\", but you are calling {} without providing a relativeReadTime. This looks like an error. You can fix this by providing a relativeReadTime to {} or by setting interpolation order to 0.",
                  _accessor->globalDataContext(dataID).getDataName(), _accessor->globalDataContext(dataID).getInterpolationOrder(), __func__, __func__);
   }
   readGlobalVectorDataImpl(dataID, relativeTimeWindowEndTime, value);
@@ -1600,27 +1576,19 @@ void SolverInterfaceImpl::readGlobalVectorDataImpl(
     PRECICE_CHECK(relativeReadTime == _couplingScheme->getNextTimestepMaxLength(), "Waveform relaxation is not allowed for solver that sets the time step size");
     normalizedReadTime = 1; // by default read at end of window.
   }
-  PRECICE_REQUIRE_DATA_READ(dataID);
+  // PRECICE_REQUIRE_DATA_READ(dataID); // TODO: write global data version of this macro
   GlobalDataContext &context = _accessor->globalDataContext(dataID);
-  // PRECICE_CHECK(valueIndex >= -1,
-  //               "Invalid value index ( {} ) when reading vector data. Value index must be >= 0. "
-  //               "Please check the value index for {}",
-  //               valueIndex, context.getDataName());
   PRECICE_CHECK(context.getDataDimensions() == _dimensions,
                 "You cannot call readGlobalVectorData on the scalar data type \"{0}\". Use readGlobalScalarData or change the data type for \"{0}\" to vector.",
                 context.getDataName());
   const auto values      = context.sampleWaveformAt(normalizedReadTime);
-  const auto vertexCount = values.size() / context.getDataDimensions();
+  const auto vertexCount = values.size() / context.getDataDimensions(); // Should always be 1. // TODO We can probably remove this line.
   PRECICE_CHECK(vertexCount == 1, "vertexCount = {} , should be 1 for global vector data", vertexCount);
-  // PRECICE_CHECK(0 <= valueIndex && valueIndex < vertexCount,
-  //               "Cannot read data \"{}\" to invalid Vertex ID ({}). "
-  //               "Please make sure you only use the results from calls to setMeshVertex/Vertices().",
-  //               context.getDataName(), valueIndex);
-  // int offset = valueIndex * _dimensions;
+
   for (int dim = 0; dim < _dimensions; dim++) {
     value[dim] = values[dim];
   }
-  PRECICE_DEBUG("read value = {}", Eigen::Map<const Eigen::VectorXd>(value, _dimensions).format(utils::eigenio::debug()));
+  PRECICE_DEBUG("read global value = {}", Eigen::Map<const Eigen::VectorXd>(value, _dimensions).format(utils::eigenio::debug()));
 }
 
 void SolverInterfaceImpl::readBlockScalarData(
@@ -1724,7 +1692,7 @@ void SolverInterfaceImpl::readGlobalScalarData(int     dataID,
   PRECICE_TRACE(dataID);
   double relativeTimeWindowEndTime = _couplingScheme->getNextTimestepMaxLength(); // samples at end of time window
   if (_accessor->globalDataContext(dataID).getInterpolationOrder() != 0) {
-    PRECICE_WARN("Interpolation order of read data named \"{}\" is set to \"{}\", but you are calling {} without providing a relativeReadTime. This looks like an error. You can fix this by providing a relativeReadTime to {} or by setting interpolation order to 0.",
+    PRECICE_WARN("Interpolation order of read global scalar-data named \"{}\" is set to \"{}\", but you are calling {} without providing a relativeReadTime. This looks like an error. You can fix this by providing a relativeReadTime to {} or by setting interpolation order to 0.",
                  _accessor->globalDataContext(dataID).getDataName(), _accessor->globalDataContext(dataID).getInterpolationOrder(), __func__, __func__);
   }
   readGlobalScalarDataImpl(dataID, relativeTimeWindowEndTime, value);
@@ -1796,25 +1764,15 @@ void SolverInterfaceImpl::readGlobalScalarDataImpl(
     PRECICE_CHECK(relativeReadTime == _couplingScheme->getNextTimestepMaxLength(), "Waveform relaxation is not allowed for solver that sets the time step size");
     normalizedReadTime = 1; // by default read at end of window.
   }
-  // PRECICE_REQUIRE_DATA_READ(dataID);
-  // TODO: write an analog of this for global.
+  // PRECICE_REQUIRE_DATA_READ(dataID); // TODO: write an analog of this for global.
   GlobalDataContext &context = _accessor->globalDataContext(dataID);
-  // PRECICE_CHECK(valueIndex >= -1,
-  //               "Invalid value index ( {} ) when reading scalar data. Value index must be >= 0. "
-  //               "Please check the value index for {}",
-  //               valueIndex, context.getDataName());
   PRECICE_CHECK(context.getDataDimensions() == 1,
                 "You cannot call readGlobalScalarData on the vector data type \"{0}\". "
                 "Use readGlobalVectorData or change the data type for \"{0}\" to scalar.",
                 context.getDataName());
 
   const auto values = context.sampleWaveformAt(normalizedReadTime);
-  // const auto vertexCount = values.size();
-  // PRECICE_CHECK(0 <= valueIndex && valueIndex < vertexCount,
-  //               "Cannot read data \"{}\" from invalid Vertex ID ({}). "
-  //               "Please make sure you only use the results from calls to setMeshVertex/Vertices().",
-  //               context.getDataName(), valueIndex);
-  value = values[0];
+  value             = values[0];
   PRECICE_DEBUG("Read global scalar value = {}", value);
 }
 

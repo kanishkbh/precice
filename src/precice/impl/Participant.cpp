@@ -219,17 +219,6 @@ bool Participant::hasData(DataID dataID) const
 
 bool Participant::hasGlobalData(DataID dataID) const
 {
-  // return std::any_of(
-  //     _meshContexts.begin(), _meshContexts.end(),
-  //     [dataID](const auto mcptr) {
-  //       if (!mcptr) {
-  //         return false;
-  //       }
-  //       const auto &meshData = mcptr->mesh->data();
-  //       return std::any_of(meshData.begin(), meshData.end(), [dataID](const auto &dptr) {
-  //         return dptr->getID() == dataID;
-  //       });
-  //     });
   PRECICE_ERROR("Participant::hasGlobalData function is TODO.");
   return false;
 }
@@ -240,17 +229,6 @@ bool Participant::isDataUsed(const std::string &dataName, MeshID meshID) const
   const auto  match    = std::find_if(meshData.begin(), meshData.end(), [&dataName](auto &dptr) { return dptr->getName() == dataName; });
   return match != meshData.end();
 }
-
-// bool Participant::isGlobalDataUsed(const std::string &dataName) const
-// {
-//   // const auto &meshData = meshContext(meshID).mesh->data();
-//   int globalDataID = getUsedGlobalDataID(dataName);
-//   // const auto  match    = std::find_if(meshData.begin(), meshData.end(), [&dataName](auto &dptr) { return dptr->getName() == dataName; });
-//   // return match != meshData.end();
-//   // return false;
-//   PRECICE_ERROR("Participant::isGlobalDataUsed is TODO.");
-//   return false;
-// }
 
 bool Participant::isDataRead(DataID dataID) const
 {
@@ -271,19 +249,8 @@ int Participant::getUsedDataID(const std::string &dataName, MeshID meshID) const
 
 int Participant::getUsedGlobalDataID(const std::string &dataName) const
 {
-  // // fetch from _globalDataContexts;
-  // auto pos = std::find_if(_globalDataContexts.begin(), _globalDataContexts.end(),
-  //                         [dataName](const auto & context_pair) {
-  //                           return context_pair.second->providedData()->getName() == dataName;
-  //                         });
-  // const auto &dptr = usedMeshContext(meshID).mesh->data(dataName);
-  // PRECICE_ASSERT(dptr != nullptr);
-  // return dptr->getID();
-  // PRECICE_ASSERT(pos != _globalDataContexts.end());
   const auto &context = globalDataContext(dataName);
   return context.providedData()->getID();
-
-  // PRECICE_ERROR("Participant::getUsedGlobalDataID function is TODO.");
 }
 
 std::string Participant::getDataName(DataID dataID) const

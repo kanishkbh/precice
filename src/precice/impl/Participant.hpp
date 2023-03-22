@@ -224,9 +224,6 @@ public:
   /// Is the data used by this participant?
   bool isDataUsed(const std::string &dataName, MeshID meshId) const;
 
-  /// Is the global data used by this participant?
-  // bool isGlobalDataUsed(const std::string &dataName) const;
-
   /// Is the participant allowed to read the data?
   bool isDataRead(DataID dataID) const;
 
