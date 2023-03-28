@@ -120,7 +120,6 @@ void SerialCouplingScheme::exchangeSecondData()
     receiveGlobalData(getM2N(), getReceiveGlobalData());
     checkDataHasBeenReceived();
   } else { // second participant
-    sendGlobalData(getM2N(), getSendGlobalData());
     // the second participant does not want new data in the last iteration of the last time window
     if (isCouplingOngoing() || (isImplicitCouplingScheme() && not hasConverged())) {
       receiveAndSetTimeWindowSize();
