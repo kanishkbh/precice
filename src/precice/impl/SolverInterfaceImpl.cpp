@@ -345,7 +345,9 @@ double SolverInterfaceImpl::initialize()
     context.initializeWaveform();
   }
   for (auto &context : _accessor->globalDataContexts()) {
-    context.initializeWaveform();
+    if (context.getDirection() == "read") {
+      context.initializeWaveform();
+    }
   }
 
   _meshLock.lockAll();
@@ -371,7 +373,9 @@ double SolverInterfaceImpl::initialize()
   }
 
   for (auto &context : _accessor->globalDataContexts()) {
-    context.moveToNextWindow();
+    if (context.getDirection() == "read") {
+      context.moveToNextWindow();
+    }
   }
 
   _couplingScheme->receiveResultOfFirstAdvance();
@@ -444,7 +448,9 @@ double SolverInterfaceImpl::advance(
       context.moveToNextWindow();
     }
     for (auto &context : _accessor->globalDataContexts()) {
-      context.moveToNextWindow();
+      if (context.getDirection() == "read") {
+        context.moveToNextWindow();
+      }
     }
   }
 
@@ -2072,6 +2078,11 @@ void SolverInterfaceImpl::resetWrittenData()
   PRECICE_TRACE();
   for (auto &context : _accessor->writeDataContexts()) {
     context.resetData();
+  }
+  for (auto &context : _accessor->globalDataContexts()) {
+    if (context.getDirection() == "write") {
+      context.resetData();
+    }
   }
 }
 
