@@ -342,7 +342,9 @@ void ParticipantImpl::initialize()
   }
 
   for (auto &context : _accessor->globalDataContexts()) {
-    context.moveToNextWindow();
+    if (context.getDirection() == "read") {
+      context.moveToNextWindow();
+    }
   }
 
   _couplingScheme->receiveResultOfFirstAdvance();
@@ -1587,6 +1589,11 @@ void ParticipantImpl::resetWrittenData(bool isAtWindowEnd, bool isTimeWindowComp
   PRECICE_TRACE();
   for (auto &context : _accessor->writeDataContexts()) {
     context.resetData(isAtWindowEnd, isTimeWindowComplete);
+  }
+  for (auto &context : _accessor->globalDataContexts()) {
+    if (context.getDirection() == "write") {
+      context.resetData();
+    }
   }
 }
 
