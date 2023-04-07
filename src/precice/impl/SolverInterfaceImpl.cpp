@@ -1069,7 +1069,6 @@ void SolverInterfaceImpl::writeVectorData(
 
 void SolverInterfaceImpl::writeGlobalVectorData(
     int dataID,
-    // int           valueIndex,
     const double *value)
 {
   PRECICE_TRACE(dataID);
