@@ -104,6 +104,7 @@ public:
       const mesh::PtrMesh &mesh,
       int                  interpolationOrder);
 
+  /// Adds a configured \ref GlobalData to the Participant
   void addGlobalData(
       const mesh::PtrGlobalData &data,
       std::string                direction,
