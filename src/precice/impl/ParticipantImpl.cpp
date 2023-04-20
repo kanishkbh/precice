@@ -562,14 +562,6 @@ bool ParticipantImpl::hasData(
   return _accessor->isDataUsed(dataName, meshName);
 }
 
-bool SolverInterfaceImpl::hasGlobalData(
-    const std::string &dataName) const
-{
-  PRECICE_TRACE(dataName);
-  // PRECICE_VALIDATE_MESH_ID(meshID);
-  return _accessor->isGlobalDataUsed(dataName);
-}
-
 int SolverInterfaceImpl::getGlobalDataID(
     const std::string &dataName) const
 {
@@ -1119,7 +1111,7 @@ void ParticipantImpl::writeGradientData(
 }
 
 void SolverInterfaceImpl::writeGlobalVectorData(
-    int dataID,
+    int           dataID,
     const double *value)
 {
   PRECICE_TRACE(dataID);
