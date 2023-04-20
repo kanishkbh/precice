@@ -555,14 +555,6 @@ public:
       std::string_view meshName,
       std::string_view dataName) const;
 
-  //   /**
-  //    * @brief Checks if the data with given name is used by a solver.
-  //    *
-  //    * @param[in] dataName the name of the data
-  //    * @returns whether the mesh is used(?))
-  //    */
-  //   bool hasGlobalData(const std::string &dataName) const;
-
   /**
    * @brief Returns the ID of the global data associated with the given name.
    *
