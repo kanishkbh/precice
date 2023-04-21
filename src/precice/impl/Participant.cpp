@@ -186,16 +186,6 @@ GlobalDataContext &Participant::globalDataContext(std::string_view data)
   return it->second;
 }
 
-// const GlobalDataContext &Participant::globalDataContext(std::string dataName) const
-// {
-//   for (const auto &dataContext : globalDataContexts()) {
-//     if (dataContext.getDataName() == dataName) {
-//       return dataContext;
-//     }
-//   }
-//   PRECICE_ASSERT(false, "GlobalData with name \"{}\" not found in Participant \"{}\".", dataName, _name);
-// }
-
 bool Participant::hasData(std::string_view mesh, std::string_view data) const
 {
   return std::any_of(
@@ -227,6 +217,7 @@ bool Participant::isDataWrite(std::string_view mesh, std::string_view data) cons
 
 bool Participant::isDataGlobal(std::string_view data) const
 {
+  ///NOTE: ignore reviewing this for now; globalDataContext will inherit from DataContext and have separate read and write classes.
   // std::string_view mesh = "";
   // return _globalDataContexts.count(MeshDataKey{mesh, data}) > 0;
 
@@ -234,12 +225,6 @@ bool Participant::isDataGlobal(std::string_view data) const
     return gdc.second.getDataName() == data;
   });
 }
-
-// int Participant::getUsedGlobalDataID(const std::string &dataName) const
-// {
-//   const auto &context = globalDataContext(dataName);
-//   return context.providedData()->getID();
-// }
 
 /// Mesh queries
 
