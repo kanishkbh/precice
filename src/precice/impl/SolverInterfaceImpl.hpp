@@ -225,9 +225,6 @@ public:
       std::string_view meshName,
       std::string_view dataName) const;
 
-  /// @copydoc SolverInterface::getGlobalDataID
-  int getGlobalDataID(const std::string &dataName) const;
-
   /// @copydoc SolverInterface::writeBlockVectorData
   void writeBlockVectorData(
       std::string_view meshName,
@@ -253,8 +250,8 @@ public:
 
   /// @copydoc SolverInterface::writeGlobalVectorData
   void writeGlobalVectorData(
-      int           fromDataID,
-      const double *value);
+      std::string_view dataName,
+      const double *   value);
 
   /// @copydoc precice::SolverInterface::writeVectorGradientData
   void writeVectorGradientData(
@@ -288,8 +285,8 @@ public:
 
   /// @copydoc SolverInterface::writeGlobalScalarData
   void writeGlobalScalarData(
-      int    dataID,
-      double value);
+      std::string_view dataName,
+      double           value);
 
   /// @copydoc precice::SolverInterface::writeScalarGradientData
   void writeScalarGradientData(
@@ -332,14 +329,14 @@ public:
 
   /// @copydoc SolverInterface::readGlobalVectorData(int, double*) const
   void readGlobalVectorData(
-      int     toDataID,
-      double *value) const;
+      std::string_view dataName,
+      double *         value) const;
 
   /// @copydoc SolverInterface::readGlobalVectorData(int, double, double*) const
   void readGlobalVectorData(
-      int     toDataID,
-      double  relativeReadTime,
-      double *value) const;
+      std::string_view dataName,
+      double           relativeReadTime,
+      double *         value) const;
 
   /// @copydoc SolverInterface::readBlockScalarData(int, int, const int*, double*) const
   void readBlockScalarData(
@@ -375,14 +372,14 @@ public:
 
   /// @copydoc SolverInterface::readGlobalScalarData(int, double&) const
   void readGlobalScalarData(
-      int     toDataID,
-      double &value) const;
+      std::string_view dataName,
+      double &         value) const;
 
   /// @copydoc SolverInterface::readGlobalScalarData(int, double, double&) const
   void readGlobalScalarData(
-      int     toDataID,
-      double  relativeReadTime,
-      double &value) const;
+      std::string_view dataName,
+      double           relativeReadTime,
+      double &         value) const;
   ///@}
 
   /** @name Experimental Data Access
@@ -527,9 +524,9 @@ private:
       double *         value) const;
 
   void readGlobalVectorDataImpl(
-      int     toDataID,
-      double  relativeReadTime,
-      double *value) const;
+      std::string_view dataName,
+      double           relativeReadTime,
+      double *         value) const;
 
   void readBlockScalarDataImpl(
       std::string_view meshName,
@@ -547,9 +544,9 @@ private:
       double &         value) const;
 
   void readGlobalScalarDataImpl(
-      int     toDataID,
-      double  relativeReadTime,
-      double &value) const;
+      std::string_view dataName,
+      double           relativeReadTime,
+      double &         value) const;
 
   /// Exports meshes with data and watch point data.
   void handleExports();

@@ -93,12 +93,6 @@ bool SolverInterface::hasData(std::string_view meshName, std::string_view dataNa
   return _impl->hasData(meshName, dataName);
 }
 
-int SolverInterface::getGlobalDataID(
-    const std::string &dataName) const
-{
-  return _impl->getGlobalDataID(dataName);
-}
-
 // void SolverInterface:: resetMesh
 //(
 //   std::string_view meshName )
@@ -229,10 +223,10 @@ void SolverInterface::writeVectorData(
 }
 
 void SolverInterface::writeGlobalVectorData(
-    int           dataID,
-    const double *value)
+    std::string_view dataName,
+    const double *   value)
 {
-  _impl->writeGlobalVectorData(dataID, value);
+  _impl->writeGlobalVectorData(dataName, value);
 }
 
 void SolverInterface::writeVectorGradientData(
@@ -274,10 +268,10 @@ void SolverInterface::writeScalarData(
 }
 
 void SolverInterface::writeGlobalScalarData(
-    int    dataID,
-    double value)
+    std::string_view dataName,
+    double           value)
 {
-  _impl->writeGlobalScalarData(dataID, value);
+  _impl->writeGlobalScalarData(dataName, value);
 }
 
 void SolverInterface::writeScalarGradientData(
@@ -331,19 +325,19 @@ void SolverInterface::readVectorData(
 }
 
 void SolverInterface::readGlobalVectorData(
-    int     dataID,
-    double *value) const
+    std::string_view dataName,
+    double *         value) const
 {
-  _impl->readGlobalVectorData(dataID, value);
+  _impl->readGlobalVectorData(dataName, value);
 }
 
 void SolverInterface::readGlobalVectorData(
-    int     dataID,
-    double  relativeReadTime,
-    double *value) const
+    std::string_view dataName,
+    double           relativeReadTime,
+    double *         value) const
 {
   // @todo: needs testing!
-  _impl->readGlobalVectorData(dataID, relativeReadTime, value);
+  _impl->readGlobalVectorData(dataName, relativeReadTime, value);
 }
 
 void SolverInterface::readBlockScalarData(
@@ -387,18 +381,18 @@ void SolverInterface::readScalarData(
 }
 
 void SolverInterface::readGlobalScalarData(
-    int     dataID,
-    double &value) const
+    std::string_view dataName,
+    double &         value) const
 {
-  _impl->readGlobalScalarData(dataID, value);
+  _impl->readGlobalScalarData(dataName, value);
 }
 
 void SolverInterface::readGlobalScalarData(
-    int     dataID,
-    double  relativeReadTime,
-    double &value) const
+    std::string_view dataName,
+    double           relativeReadTime,
+    double &         value) const
 {
-  _impl->readGlobalScalarData(dataID, relativeReadTime, value);
+  _impl->readGlobalScalarData(dataName, relativeReadTime, value);
 }
 
 void SolverInterface::setMeshAccessRegion(std::string_view meshName,
