@@ -180,11 +180,6 @@ public:
    */
   GlobalDataContext &globalDataContext(std::string_view data);
 
-  // /** Provides access to \ref GlobalDataContext of a \ref dataName
-  //  * @pre there exists a \ref GlobalDataContext for \ref dataName
-  //  */
-  // const GlobalDataContext &globalDataContext(std::string_view data) const;
-
   /** Provides access to all \ref WriteDataContext objects
    * @remarks does not contain nullptr.
    */
@@ -246,9 +241,6 @@ public:
 
   /// Is the participant allowed to read/write the global data?
   bool isDataGlobal(std::string_view data) const;
-
-  /// What is the dataID of the used global data given the data name?
-  // int getUsedGlobalDataID(const std::string &dataName) const;
 
   /// @name Mesh queries
   /// @{
