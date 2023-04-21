@@ -330,7 +330,7 @@ private:
   void checkIfDataIsExchanged(
       DataID dataID) const;
 
- void checkIfGlobalDataIsExchanged(
+  void checkIfGlobalDataIsExchanged(
       DataID dataID) const;
 
   void checkWaveformOrderReadData(
