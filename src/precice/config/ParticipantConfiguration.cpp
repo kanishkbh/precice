@@ -321,8 +321,8 @@ void ParticipantConfiguration::xmlTagCallback(
     const std::string &dataName = tag.getStringAttributeValue(ATTR_NAME);
     std::string        meshName = tag.getStringAttributeValue(ATTR_MESH);
     if (meshName.empty()) { // no mesh implies it's global data
-      mesh::PtrGlobalData data = getGlobalData(dataName);
-      _participants.back()->addGlobalData(data, "write");
+      mesh::PtrData data = getGlobalData(dataName);
+      _participants.back()->addGlobalData(data, "write"); // TODO: replace with addGlobalWriteData
     } else {
       mesh::PtrMesh mesh = _meshConfig->getMesh(meshName);
       PRECICE_CHECK(mesh,
@@ -344,8 +344,8 @@ void ParticipantConfiguration::xmlTagCallback(
       PRECICE_ERROR("You tried to configure the read data with name \"{}\" to use the waveform-order=\"{}\", but the order must be between \"{}\" and \"{}\". Please use an order in the allowed range.", dataName, waveformOrder, time::Time::MIN_INTERPOLATION_ORDER, time::Time::MAX_INTERPOLATION_ORDER);
     }
     if (meshName.empty()) { // no mesh implies it's global data
-      mesh::PtrGlobalData data = getGlobalData(dataName);
-      _participants.back()->addGlobalData(data, "read", waveformOrder);
+      mesh::PtrData data = getGlobalData(dataName);
+      _participants.back()->addGlobalData(data, "read", waveformOrder); // TODO: replace with addGlobalReadData
     } else {
       mesh::PtrMesh mesh = _meshConfig->getMesh(meshName);
       PRECICE_CHECK(mesh,
@@ -429,7 +429,7 @@ const mesh::PtrData &ParticipantConfiguration::getData(
   return mesh->data(nameData);
 }
 
-const mesh::PtrGlobalData &ParticipantConfiguration::getGlobalData(
+const mesh::PtrData &ParticipantConfiguration::getGlobalData(
     const std::string &nameData) const
 {
   mesh::PtrDataConfiguration dataConfig = _meshConfig->getDataConfiguration();
