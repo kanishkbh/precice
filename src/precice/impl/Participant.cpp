@@ -14,7 +14,7 @@
 #include "io/Export.hpp"
 #include "logging/LogMacros.hpp"
 #include "mesh/Data.hpp"
-#include "mesh/GlobalData.hpp"
+// #include "mesh/GlobalData.hpp"
 #include "mesh/Mesh.hpp"
 #include "mesh/config/DataConfiguration.hpp"
 #include "mesh/config/MeshConfiguration.hpp"
@@ -123,13 +123,14 @@ void Participant::addReadData(
 }
 
 void Participant::addGlobalData(
-    const mesh::PtrGlobalData &data,
-    std::string                direction,
-    int                        interpolationOrder)
+    const mesh::PtrData &data,
+    std::string          direction,
+    int                  interpolationOrder)
 {
   checkDuplicatedGlobalData(data->getName());
   _globalDataContexts.emplace(data->getName(), GlobalDataContext(data, direction, interpolationOrder));
 }
+// TODO: replace with addGlobalReadData and addGlobalWriteData
 
 void Participant::addReadMappingContext(
     const MappingContext &mappingContext)

@@ -311,7 +311,7 @@ protected:
    * @param requiresInitialization true, if GlobalCouplingData requires initialization
    * @return PtrGlobalCouplingData pointer to CouplingData owned by the CouplingScheme
    */
-  PtrGlobalCouplingData addGlobalCouplingData(const mesh::PtrGlobalData &data, bool requiresInitialization);
+  PtrGlobalCouplingData addGlobalCouplingData(const mesh::PtrData &data, bool requiresInitialization);
 
   /**
    * @brief Function to determine whether coupling scheme is an explicit coupling scheme
