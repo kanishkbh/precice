@@ -35,7 +35,6 @@
 #include "math/geometry.hpp"
 #include "mesh/Data.hpp"
 #include "mesh/Edge.hpp"
-// #include "mesh/GlobalData.hpp"
 #include "mesh/Mesh.hpp"
 #include "mesh/SharedPointer.hpp"
 #include "mesh/Utils.hpp"
@@ -344,7 +343,7 @@ void SolverInterfaceImpl::initialize()
   for (auto &context : _accessor->readDataContexts()) {
     context.initializeWaveform();
   }
-  for (auto &context : _accessor->globalReadDataContexts()) {
+  for (auto &context : _accessor->readGlobalDataContexts()) {
     context.initializeWaveform();
   }
 
@@ -371,7 +370,7 @@ void SolverInterfaceImpl::initialize()
     context.moveToNextWindow();
   }
 
-  for (auto &context : _accessor->globalReadDataContexts()) {
+  for (auto &context : _accessor->readGlobalDataContexts()) {
     context.moveToNextWindow();
   }
 
@@ -442,7 +441,7 @@ void SolverInterfaceImpl::advance(
     for (auto &context : _accessor->readDataContexts()) {
       context.moveToNextWindow();
     }
-    for (auto &context : _accessor->globalReadDataContexts()) {
+    for (auto &context : _accessor->readGlobalDataContexts()) {
       context.moveToNextWindow();
     }
   }
@@ -1132,7 +1131,7 @@ void SolverInterfaceImpl::writeGlobalVectorData(
   // PRECICE_REQUIRE_DATA_WRITE(dataName);
   // TODO: write an analog of this for global.
   PRECICE_DEBUG("value = {}", Eigen::Map<const Eigen::VectorXd>(value, _dimensions).format(utils::eigenio::debug()));
-  GlobalWriteDataContext &context = _accessor->globalWriteDataContext(dataName);
+  WriteGlobalDataContext &context = _accessor->writeGlobalDataContext(dataName);
   PRECICE_ASSERT(context.providedData() != nullptr);
   PRECICE_CHECK(context.getDataDimensions() == _dimensions,
                 "You cannot call writeGlobalVectorData on the scalar data type \"{0}\". Use writeGlobalScalarData or change the data type for \"{0}\" to vector.",
@@ -1154,7 +1153,7 @@ void SolverInterfaceImpl::writeGlobalScalarData(
   PRECICE_TRACE(dataName, value);
   PRECICE_CHECK(_state != State::Finalized, "writeGlobalScalarData(...) cannot be called after finalize().");
   // PRECICE_REQUIRE_DATA_WRITE(dataName); TODO write global data analog for this
-  GlobalWriteDataContext &context = _accessor->globalWriteDataContext(dataName);
+  WriteGlobalDataContext &context = _accessor->writeGlobalDataContext(dataName);
   PRECICE_ASSERT(context.providedData() != nullptr);
   PRECICE_CHECK(context.getDataDimensions() == 1,
                 "You cannot call writeGlobalScalarData on the vector data type \"{0}\". "
@@ -1172,9 +1171,9 @@ void SolverInterfaceImpl::readGlobalVectorData(
 {
   PRECICE_TRACE(dataName);
   double relativeTimeWindowEndTime = _couplingScheme->getNextTimestepMaxLength(); // samples at end of time window
-  if (_accessor->globalReadDataContext(dataName).getInterpolationOrder() != 0) {
+  if (_accessor->readGlobalDataContext(dataName).getInterpolationOrder() != 0) {
     PRECICE_WARN("Interpolation order of read global vector-data named \"{}\" is set to \"{}\", but you are calling {} without providing a relativeReadTime. This looks like an error. You can fix this by providing a relativeReadTime to {} or by setting interpolation order to 0.",
-                 _accessor->globalReadDataContext(dataName).getDataName(), _accessor->globalReadDataContext(dataName).getInterpolationOrder(), __func__, __func__);
+                 _accessor->readGlobalDataContext(dataName).getDataName(), _accessor->readGlobalDataContext(dataName).getInterpolationOrder(), __func__, __func__);
   }
   readGlobalVectorDataImpl(dataName, relativeTimeWindowEndTime, value);
 }
@@ -1207,7 +1206,7 @@ void SolverInterfaceImpl::readGlobalVectorDataImpl(
     normalizedReadTime = 1; // by default read at end of window.
   }
   // PRECICE_REQUIRE_DATA_READ(dataName); // TODO: write global data version of this macro
-  GlobalReadDataContext &context = _accessor->globalReadDataContext(dataName);
+  ReadGlobalDataContext &context = _accessor->readGlobalDataContext(dataName);
   PRECICE_CHECK(context.getDataDimensions() == _dimensions,
                 "You cannot call readGlobalVectorData on the scalar data type \"{0}\". Use readGlobalScalarData or change the data type for \"{0}\" to vector.",
                 context.getDataName());
@@ -1226,9 +1225,9 @@ void SolverInterfaceImpl::readGlobalScalarData(std::string_view dataName,
 {
   PRECICE_TRACE(dataName);
   double relativeTimeWindowEndTime = _couplingScheme->getNextTimestepMaxLength(); // samples at end of time window
-  if (_accessor->globalReadDataContext(dataName).getInterpolationOrder() != 0) {
+  if (_accessor->readGlobalDataContext(dataName).getInterpolationOrder() != 0) {
     PRECICE_WARN("Interpolation order of read global scalar-data named \"{}\" is set to \"{}\", but you are calling {} without providing a relativeReadTime. This looks like an error. You can fix this by providing a relativeReadTime to {} or by setting interpolation order to 0.",
-                 _accessor->globalReadDataContext(dataName).getDataName(), _accessor->globalReadDataContext(dataName).getInterpolationOrder(), __func__, __func__);
+                 _accessor->readGlobalDataContext(dataName).getDataName(), _accessor->readGlobalDataContext(dataName).getInterpolationOrder(), __func__, __func__);
   }
   readGlobalScalarDataImpl(dataName, relativeTimeWindowEndTime, value);
 }
@@ -1261,7 +1260,7 @@ void SolverInterfaceImpl::readGlobalScalarDataImpl(
     normalizedReadTime = 1; // by default read at end of window.
   }
   // PRECICE_REQUIRE_DATA_READ(dataName); // TODO: write an analog of this for global.
-  GlobalReadDataContext &context = _accessor->globalReadDataContext(dataName);
+  ReadGlobalDataContext &context = _accessor->readGlobalDataContext(dataName);
   PRECICE_CHECK(context.getDataDimensions() == 1,
                 "You cannot call readGlobalScalarData on the vector data type \"{0}\". "
                 "Use readGlobalVectorData or change the data type for \"{0}\" to scalar.",
@@ -1535,7 +1534,7 @@ void SolverInterfaceImpl::mapReadData()
     context.storeDataInWaveform();
   }
 
-  for (auto &context : _accessor->globalReadDataContexts()) {
+  for (auto &context : _accessor->readGlobalDataContexts()) {
     PRECICE_DEBUG("Store read global data \"{}\" in Waveform ", context.getDataName());
     context.storeDataInWaveform();
   }
@@ -1570,7 +1569,7 @@ void SolverInterfaceImpl::resetWrittenData()
   for (auto &context : _accessor->writeDataContexts()) {
     context.resetData();
   }
-  for (auto &context : _accessor->globalWriteDataContexts()) {
+  for (auto &context : _accessor->writeGlobalDataContexts()) {
     context.resetData();
   }
 }
