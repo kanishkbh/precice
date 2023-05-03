@@ -18,7 +18,8 @@
 #include "mapping/SharedPointer.hpp"
 #include "mesh/SharedPointer.hpp"
 #include "partition/ReceivedPartition.hpp"
-#include "precice/impl/GlobalDataContext.hpp"
+#include "precice/impl/GlobalReadDataContext.hpp"
+#include "precice/impl/GlobalWriteDataContext.hpp"
 #include "precice/impl/ReadDataContext.hpp"
 #include "precice/impl/WriteDataContext.hpp"
 #include "precice/types.hpp"
@@ -104,11 +105,14 @@ public:
       const mesh::PtrMesh &mesh,
       int                  interpolationOrder);
 
-  /// Adds a configured \ref GlobalData to the Participant
-  void addGlobalData(
+  /// Adds a configured \ref GlobalData to the ParticipantState
+  void addGlobalReadData(
       const mesh::PtrData &data,
-      std::string          direction,
       int                  interpolationOrder = time::Time::DEFAULT_INTERPOLATION_ORDER);
+
+  /// Adds a configured write \ref GlobalData to the ParticipantState
+  void addGlobalWriteData(
+      const mesh::PtrData &data);
 
   /// Adds a configured read \ref Mapping to the ParticipantState
   void addReadMappingContext(const MappingContext &mappingContext);
@@ -170,15 +174,25 @@ public:
    */
   WriteDataContext &writeDataContext(std::string_view mesh, std::string_view data);
 
-  /** Provides access to \ref GlobalDataContext
-   * @pre there exists a \ref GlobalDataContext for \ref data
+  /** Provides access to \ref GlobalWriteDataContext
+   * @pre there exists a \ref GlobalWriteDataContext for \ref data
    */
-  const GlobalDataContext &globalDataContext(std::string_view data) const;
+  const GlobalWriteDataContext &globalWriteDataContext(std::string_view data) const;
 
-  /** Provides access to \ref GlobalDataContext
-   * @pre there exists a \ref GlobalDataContext for \ref data
+  /** Provides access to \ref GlobalWriteDataContext
+   * @pre there exists a \ref GlobalWriteDataContext for \ref data
    */
-  GlobalDataContext &globalDataContext(std::string_view data);
+  GlobalWriteDataContext &globalWriteDataContext(std::string_view data);
+
+  /** Provides access to \ref GlobalWriteDataContext
+   * @pre there exists a \ref GlobalWriteDataContext for \ref data
+   */
+  const GlobalReadDataContext &globalReadDataContext(std::string_view data) const;
+
+  /** Provides access to \ref GlobalWriteDataContext
+   * @pre there exists a \ref GlobalWriteDataContext for \ref data
+   */
+  GlobalReadDataContext &globalReadDataContext(std::string_view data);
 
   /** Provides access to all \ref WriteDataContext objects
    * @remarks does not contain nullptr.
@@ -196,20 +210,30 @@ public:
     return _readDataContexts | boost::adaptors::map_values;
   }
 
-  /** Provides const access to all \ref GlobalDataContext objects
+  /** Provides const access to all \ref GlobalWriteDataContext objects
    * @remarks does not contain nullptr.
    */
-  auto globalDataContexts() const
+  auto globalWriteDataContexts() const
   {
-    return _globalDataContexts | boost::adaptors::map_values;
+    return _globalWriteDataContexts | boost::adaptors::map_values;
   }
 
-  /** Provides access to all \ref GlobalDataContext objects
+  /** Provides const access to all \ref GlobalWriteDataContext objects
    * @remarks does not contain nullptr.
    */
-  auto globalDataContexts()
+  auto globalWriteDataContexts()
   {
-    return _globalDataContexts | boost::adaptors::map_values;
+    return _globalWriteDataContexts | boost::adaptors::map_values;
+  }
+
+  auto globalReadDataContexts() const
+  {
+    return _globalReadDataContexts | boost::adaptors::map_values;
+  }
+
+  auto globalReadDataContexts()
+  {
+    return _globalReadDataContexts | boost::adaptors::map_values;
   }
 
   /** @brief Determines and returns the maximum order of all read waveforms of this participant
@@ -220,9 +244,10 @@ public:
     for (const auto &context : _readDataContexts | boost::adaptors::map_values) {
       maxOrder = std::max(maxOrder, context.getInterpolationOrder());
     }
-    for (auto &context : _globalDataContexts | boost::adaptors::map_values) {
+    for (auto &context : _globalReadDataContexts | boost::adaptors::map_values) {
       maxOrder = std::max(maxOrder, context.getInterpolationOrder());
     }
+
     return maxOrder;
   }
 
@@ -239,8 +264,11 @@ public:
   bool isDataWrite(std::string_view mesh, std::string_view data) const;
   /// @}
 
-  /// Is the participant allowed to read/write the global data?
-  bool isDataGlobal(std::string_view data) const;
+  /// Is the participant allowed to read the global data?
+  bool isGlobalDataRead(std::string_view data) const;
+
+  /// Is the participant allowed to write the global data?
+  bool isGlobalDataWrite(std::string_view data) const;
 
   /// @name Mesh queries
   /// @{
@@ -391,7 +419,9 @@ private:
 
   DataMap<ReadDataContext> _readDataContexts;
 
-  std::map<std::string_view, GlobalDataContext> _globalDataContexts;
+  std::map<std::string_view, GlobalReadDataContext> _globalReadDataContexts;
+
+  std::map<std::string_view, GlobalWriteDataContext> _globalWriteDataContexts;
 
   bool _useIntraComm = false;
 

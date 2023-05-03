@@ -341,10 +341,8 @@ void ParticipantImpl::initialize()
     context.moveToNextWindow();
   }
 
-  for (auto &context : _accessor->globalDataContexts()) {
-    if (context.getDirection() == "read") {
-      context.moveToNextWindow();
-    }
+  for (auto &context : _accessor->globalReadDataContexts()) {
+    context.moveToNextWindow();
   }
 
   _couplingScheme->receiveResultOfFirstAdvance();
@@ -1112,7 +1110,7 @@ void SolverInterfaceImpl::writeGlobalVectorData(
   // PRECICE_REQUIRE_DATA_WRITE(dataName);
   // TODO: write an analog of this for global.
   PRECICE_DEBUG("value = {}", Eigen::Map<const Eigen::VectorXd>(value, _dimensions).format(utils::eigenio::debug()));
-  GlobalDataContext &context = _accessor->globalDataContext(dataName);
+  GlobalWriteDataContext &context = _accessor->globalWriteDataContext(dataName);
   PRECICE_ASSERT(context.providedData() != nullptr);
   PRECICE_CHECK(context.getDataDimensions() == _dimensions,
                 "You cannot call writeGlobalVectorData on the scalar data type \"{0}\". Use writeGlobalScalarData or change the data type for \"{0}\" to vector.",
@@ -1134,7 +1132,7 @@ void SolverInterfaceImpl::writeGlobalScalarData(
   PRECICE_TRACE(dataName, value);
   PRECICE_CHECK(_state != State::Finalized, "writeGlobalScalarData(...) cannot be called after finalize().");
   // PRECICE_REQUIRE_DATA_WRITE(dataName); TODO write global data analog for this
-  GlobalDataContext &context = _accessor->globalDataContext(dataName);
+  GlobalWriteDataContext &context = _accessor->globalWriteDataContext(dataName);
   PRECICE_ASSERT(context.providedData() != nullptr);
   PRECICE_CHECK(context.getDataDimensions() == 1,
                 "You cannot call writeGlobalScalarData on the vector data type \"{0}\". "
@@ -1152,9 +1150,9 @@ void SolverInterfaceImpl::readGlobalVectorData(
 {
   PRECICE_TRACE(dataName);
   double relativeTimeWindowEndTime = _couplingScheme->getNextTimestepMaxLength(); // samples at end of time window
-  if (_accessor->globalDataContext(dataName).getInterpolationOrder() != 0) {
+  if (_accessor->globalReadDataContext(dataName).getInterpolationOrder() != 0) {
     PRECICE_WARN("Interpolation order of read global vector-data named \"{}\" is set to \"{}\", but you are calling {} without providing a relativeReadTime. This looks like an error. You can fix this by providing a relativeReadTime to {} or by setting interpolation order to 0.",
-                 _accessor->globalDataContext(dataName).getDataName(), _accessor->globalDataContext(dataName).getInterpolationOrder(), __func__, __func__);
+                 _accessor->globalReadDataContext(dataName).getDataName(), _accessor->globalReadDataContext(dataName).getInterpolationOrder(), __func__, __func__);
   }
   readGlobalVectorDataImpl(dataName, relativeTimeWindowEndTime, value);
 }
@@ -1187,7 +1185,7 @@ void SolverInterfaceImpl::readGlobalVectorDataImpl(
     normalizedReadTime = 1; // by default read at end of window.
   }
   // PRECICE_REQUIRE_DATA_READ(dataName); // TODO: write global data version of this macro
-  GlobalDataContext &context = _accessor->globalDataContext(dataName);
+  GlobalReadDataContext &context = _accessor->globalReadDataContext(dataName);
   PRECICE_CHECK(context.getDataDimensions() == _dimensions,
                 "You cannot call readGlobalVectorData on the scalar data type \"{0}\". Use readGlobalScalarData or change the data type for \"{0}\" to vector.",
                 context.getDataName());
@@ -1206,9 +1204,9 @@ void SolverInterfaceImpl::readGlobalScalarData(std::string_view dataName,
 {
   PRECICE_TRACE(dataName);
   double relativeTimeWindowEndTime = _couplingScheme->getNextTimestepMaxLength(); // samples at end of time window
-  if (_accessor->globalDataContext(dataName).getInterpolationOrder() != 0) {
+  if (_accessor->globalReadDataContext(dataName).getInterpolationOrder() != 0) {
     PRECICE_WARN("Interpolation order of read global scalar-data named \"{}\" is set to \"{}\", but you are calling {} without providing a relativeReadTime. This looks like an error. You can fix this by providing a relativeReadTime to {} or by setting interpolation order to 0.",
-                 _accessor->globalDataContext(dataName).getDataName(), _accessor->globalDataContext(dataName).getInterpolationOrder(), __func__, __func__);
+                 _accessor->globalReadDataContext(dataName).getDataName(), _accessor->globalReadDataContext(dataName).getInterpolationOrder(), __func__, __func__);
   }
   readGlobalScalarDataImpl(dataName, relativeTimeWindowEndTime, value);
 }
@@ -1241,7 +1239,7 @@ void SolverInterfaceImpl::readGlobalScalarDataImpl(
     normalizedReadTime = 1; // by default read at end of window.
   }
   // PRECICE_REQUIRE_DATA_READ(dataName); // TODO: write an analog of this for global.
-  GlobalDataContext &context = _accessor->globalDataContext(dataName);
+  GlobalReadDataContext &context = _accessor->globalReadDataContext(dataName);
   PRECICE_CHECK(context.getDataDimensions() == 1,
                 "You cannot call readGlobalScalarData on the vector data type \"{0}\". "
                 "Use readGlobalVectorData or change the data type for \"{0}\" to scalar.",
@@ -1534,12 +1532,9 @@ void ParticipantImpl::mapReadData()
     }
   }
 
-  for (auto &context : _accessor->globalDataContexts()) {
-    if (context.getDirection() == "read") {
-      PRECICE_DEBUG("Store read global data \"{}\" in Waveform ", context.getDataName());
-      // context.mapData();
-      context.storeDataInWaveform();
-    }
+  for (auto &context : _accessor->globalReadDataContexts()) {
+    PRECICE_DEBUG("Store read global data \"{}\" in Waveform ", context.getDataName());
+    context.storeDataInWaveform();
   }
 }
 
@@ -1572,10 +1567,8 @@ void ParticipantImpl::resetWrittenData(bool isAtWindowEnd, bool isTimeWindowComp
   for (auto &context : _accessor->writeDataContexts()) {
     context.resetData(isAtWindowEnd, isTimeWindowComplete);
   }
-  for (auto &context : _accessor->globalDataContexts()) {
-    if (context.getDirection() == "write") {
-      context.resetData();
-    }
+  for (auto &context : _accessor->globalWriteDataContexts()) {
+    context.resetData();
   }
 }
 
