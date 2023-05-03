@@ -322,7 +322,7 @@ void ParticipantConfiguration::xmlTagCallback(
     std::string        meshName = tag.getStringAttributeValue(ATTR_MESH);
     if (meshName.empty()) { // no mesh implies it's global data
       mesh::PtrData data = getGlobalData(dataName);
-      _participants.back()->addGlobalWriteData(data);
+      _participants.back()->addWriteGlobalData(data);
     } else {
       mesh::PtrMesh mesh = _meshConfig->getMesh(meshName);
       PRECICE_CHECK(mesh,
@@ -346,7 +346,7 @@ void ParticipantConfiguration::xmlTagCallback(
     }
     if (meshName.empty()) { // no mesh implies it's global data
       mesh::PtrData data = getGlobalData(dataName);
-      _participants.back()->addGlobalReadData(data, waveformOrder);
+      _participants.back()->addReadGlobalData(data, waveformOrder);
     } else {
       mesh::PtrMesh mesh = _meshConfig->getMesh(meshName);
       PRECICE_CHECK(mesh,
