@@ -122,14 +122,14 @@ void ParticipantState::addReadData(
   _readDataContexts.emplace(MeshDataKey{mesh->getName(), data->getName()}, ReadDataContext(data, mesh, interpolationOrder));
 }
 
-void ParticipantState::addGlobalWriteData(
+void ParticipantState::addWriteGlobalData(
     const mesh::PtrData &data)
 {
   checkDuplicatedGlobalData(data->getName());
   _writeGlobalDataContexts.emplace(data->getName(), WriteGlobalDataContext(data));
 }
 
-void ParticipantState::addGlobalReadData(
+void ParticipantState::addReadGlobalData(
     const mesh::PtrData &data,
     int                  interpolationOrder)
 {
