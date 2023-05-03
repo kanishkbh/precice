@@ -122,15 +122,20 @@ void Participant::addReadData(
   _readDataContexts.emplace(MeshDataKey{mesh->getName(), data->getName()}, ReadDataContext(data, mesh, interpolationOrder));
 }
 
-void Participant::addGlobalData(
+void Participant::addGlobalWriteData(
+    const mesh::PtrData &data)
+{
+  checkDuplicatedGlobalData(data->getName());
+  _globalWriteDataContexts.emplace(data->getName(), GlobalWriteDataContext(data));
+}
+
+void Participant::addGlobalReadData(
     const mesh::PtrData &data,
-    std::string          direction,
     int                  interpolationOrder)
 {
   checkDuplicatedGlobalData(data->getName());
-  _globalDataContexts.emplace(data->getName(), GlobalDataContext(data, direction, interpolationOrder));
+  _globalReadDataContexts.emplace(data->getName(), GlobalReadDataContext(data, interpolationOrder));
 }
-// TODO: replace with addGlobalReadData and addGlobalWriteData
 
 void Participant::addReadMappingContext(
     const MappingContext &mappingContext)
@@ -173,17 +178,31 @@ WriteDataContext &Participant::writeDataContext(std::string_view mesh, std::stri
   return it->second;
 }
 
-const GlobalDataContext &Participant::globalDataContext(std::string_view data) const
+const GlobalWriteDataContext &Participant::globalWriteDataContext(std::string_view data) const
 {
-  auto it = _globalDataContexts.find(data);
-  PRECICE_CHECK(it != _globalDataContexts.end(), "Data \"{}\" does not exist as global data.", data)
+  auto it = _globalWriteDataContexts.find(data);
+  PRECICE_CHECK(it != _globalWriteDataContexts.end(), "Global Data \"{}\" does not exist in write direction.", data)
   return it->second;
 }
 
-GlobalDataContext &Participant::globalDataContext(std::string_view data)
+GlobalWriteDataContext &Participant::globalWriteDataContext(std::string_view data)
 {
-  auto it = _globalDataContexts.find(data);
-  PRECICE_CHECK(it != _globalDataContexts.end(), "Data \"{}\" does not exist as global data.", data)
+  auto it = _globalWriteDataContexts.find(data);
+  PRECICE_CHECK(it != _globalWriteDataContexts.end(), "Global Data \"{}\" does not exist in write direction.", data)
+  return it->second;
+}
+
+const GlobalReadDataContext &Participant::globalReadDataContext(std::string_view data) const
+{
+  auto it = _globalReadDataContexts.find(data);
+  PRECICE_CHECK(it != _globalReadDataContexts.end(), "Global Data \"{}\" does not exist in read direction.", data)
+  return it->second;
+}
+
+GlobalReadDataContext &Participant::globalReadDataContext(std::string_view data)
+{
+  auto it = _globalReadDataContexts.find(data);
+  PRECICE_CHECK(it != _globalReadDataContexts.end(), "Global Data \"{}\" does not exist in read direction.", data)
   return it->second;
 }
 
@@ -216,14 +235,25 @@ bool Participant::isDataWrite(std::string_view mesh, std::string_view data) cons
   return _writeDataContexts.count(MeshDataKey{mesh, data}) > 0;
 }
 
-bool Participant::isDataGlobal(std::string_view data) const
+bool Participant::isGlobalDataWrite(std::string_view data) const
 {
-  ///NOTE: ignore reviewing this for now; globalDataContext will inherit from DataContext and have separate read and write classes.
+  ///NOTE: ignore reviewing this for now; globalWriteDataContext will inherit from DataContext and have separate read and write classes.
   // std::string_view mesh = "";
-  // return _globalDataContexts.count(MeshDataKey{mesh, data}) > 0;
+  // return _globalWriteDataContexts.count(MeshDataKey{mesh, data}) > 0;
 
-  return std::any_of(_globalDataContexts.begin(), _globalDataContexts.end(), [data](const auto &gdc) {
-    return gdc.second.getDataName() == data;
+  return std::any_of(_globalWriteDataContexts.begin(), _globalWriteDataContexts.end(), [data](const auto &gwdc) {
+    return gwdc.second.getDataName() == data;
+  });
+}
+
+bool Participant::isGlobalDataRead(std::string_view data) const
+{
+  ///NOTE: ignore reviewing this for now; globalReadDataContext will inherit from DataContext and have separate read and write classes.
+  // std::string_view mesh = "";
+  // return _globalReadDataContexts.count(MeshDataKey{mesh, data}) > 0;
+
+  return std::any_of(_globalReadDataContexts.begin(), _globalReadDataContexts.end(), [data](const auto &grdc) {
+    return grdc.second.getDataName() == data;
   });
 }
 
@@ -489,7 +519,7 @@ std::string Participant::hintForMeshData(std::string_view mesh, std::string_view
 void Participant::checkDuplicatedGlobalData(std::string_view data)
 {
   // bool isDataGlobal = _globalDataContexts.count(data->getID()) > 0;
-  PRECICE_CHECK(!isDataGlobal(data),
+  PRECICE_CHECK(!isGlobalDataRead(data) && !isGlobalDataWrite(data),
                 "Participant \"{}\" can read/write global data \"{}\" only once. "
                 "Please remove any duplicate instances of write-data/read-data nodes.",
                 _name, data);
