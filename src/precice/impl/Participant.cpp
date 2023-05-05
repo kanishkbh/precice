@@ -14,7 +14,6 @@
 #include "io/Export.hpp"
 #include "logging/LogMacros.hpp"
 #include "mesh/Data.hpp"
-// #include "mesh/GlobalData.hpp"
 #include "mesh/Mesh.hpp"
 #include "mesh/config/DataConfiguration.hpp"
 #include "mesh/config/MeshConfiguration.hpp"
@@ -180,28 +179,28 @@ WriteDataContext &Participant::writeDataContext(std::string_view mesh, std::stri
 
 const WriteGlobalDataContext &Participant::writeGlobalDataContext(std::string_view data) const
 {
-  auto it = _writeGlobalDataContexts.find(data);
+  auto it = _writeGlobalDataContexts.find(std::string(data));
   PRECICE_CHECK(it != _writeGlobalDataContexts.end(), "Global Data \"{}\" does not exist in write direction.", data)
   return it->second;
 }
 
 WriteGlobalDataContext &Participant::writeGlobalDataContext(std::string_view data)
 {
-  auto it = _writeGlobalDataContexts.find(data);
+  auto it = _writeGlobalDataContexts.find(std::string(data));
   PRECICE_CHECK(it != _writeGlobalDataContexts.end(), "Global Data \"{}\" does not exist in write direction.", data)
   return it->second;
 }
 
 const ReadGlobalDataContext &Participant::readGlobalDataContext(std::string_view data) const
 {
-  auto it = _readGlobalDataContexts.find(data);
+  auto it = _readGlobalDataContexts.find(std::string(data));
   PRECICE_CHECK(it != _readGlobalDataContexts.end(), "Global Data \"{}\" does not exist in read direction.", data)
   return it->second;
 }
 
 ReadGlobalDataContext &Participant::readGlobalDataContext(std::string_view data)
 {
-  auto it = _readGlobalDataContexts.find(data);
+  auto it = _readGlobalDataContexts.find(std::string(data));
   PRECICE_CHECK(it != _readGlobalDataContexts.end(), "Global Data \"{}\" does not exist in read direction.", data)
   return it->second;
 }
