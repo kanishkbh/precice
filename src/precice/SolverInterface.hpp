@@ -623,7 +623,6 @@ public:
       ::precice::span<const VertexID> vertices,
       ::precice::span<const double>   values);
 
-
   /**
    * @brief Writes global vector data
    *
@@ -642,7 +641,6 @@ public:
   void writeGlobalVectorData(
       std::string_view dataName,
       const double *   value);
-
 
   /**
    * @brief Writes global scalar data
@@ -711,7 +709,7 @@ public:
       int     dataID,
       double &value) const;
 
-/**
+  /**
    * @brief Reads global vector data. Values correspond to the end of the current time window.
    *
    * This function reads the value of a global data object.
@@ -838,7 +836,7 @@ public:
    *
    * The data is read at relativeReadTime, which indicates the point in time measured from the beginning of the current time step.
    * relativeReadTime = 0 corresponds to data at the beginning of the time step. Assuming that the user will call advance(dt) at the
-   * end of the time step, dt indicates the length of the current time step. Then relativeReadTime = dt corresponds to the data at
+   * end of the time step, dt indicates the size of the current time step. Then relativeReadTime = dt corresponds to the data at
    * the end of the time step.
    *
    * @param[in] dataID ID to read from.
@@ -854,7 +852,6 @@ public:
       double  relativeReadTime,
       double &value) const;
 
-
   /**
    * @brief Reads global vector data. Values correspond to a given point in time relative to the beginning of the current timestep.
    *
@@ -868,7 +865,7 @@ public:
    *
    * The data is read at relativeReadTime, which indicates the point in time measured from the beginning of the current time step.
    * relativeReadTime = 0 corresponds to data at the beginning of the time step. Assuming that the user will call advance(dt) at the
-   * end of the time step, dt indicates the length of the current time step. Then relativeReadTime = dt corresponds to the data at
+   * end of the time step, dt indicates the size of the current time step. Then relativeReadTime = dt corresponds to the data at
    * the end of the time step.
    *
    * @param[in] dataName the name of the data to read from.
@@ -887,7 +884,6 @@ public:
 
   ///@}
 
-
   /**
    * @brief Reads global scalar data. Values correspond to a given point in time relative to the beginning of the current timestep.
    *
@@ -897,7 +893,7 @@ public:
    *
    * The data is read at relativeReadTime, which indicates the point in time measured from the beginning of the current time step.
    * relativeReadTime = 0 corresponds to data at the beginning of the time step. Assuming that the user will call advance(dt) at the
-   * end of the time step, dt indicates the length of the current time step. Then relativeReadTime = dt corresponds to the data at
+   * end of the time step, dt indicates the size of the current time step. Then relativeReadTime = dt corresponds to the data at
    * the end of the time step.
    *
    * @param[in] dataName the name of the data to read from.
@@ -912,7 +908,6 @@ public:
       std::string_view dataName,
       double           relativeReadTime,
       double &         value) const;
-
 
   /** @name Experimental: Gradient Data
    * These API functions are \b experimental and may change in future versions.
