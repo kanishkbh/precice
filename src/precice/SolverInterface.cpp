@@ -227,6 +227,13 @@ void SolverInterface::writeData(
   _impl->writeData(toSV(meshName), toSV(dataName), vertices, values);
 }
 
+void SolverInterface::writeGlobalData(
+    ::precice::string_view        dataName,
+    ::precice::span<const double> value)
+{
+  _impl->writeGlobalData(toSV(dataName), value);
+}
+
 void SolverInterface::readData(
     ::precice::string_view          meshName,
     ::precice::string_view          dataName,
@@ -237,42 +244,12 @@ void SolverInterface::readData(
   _impl->readData(toSV(meshName), toSV(dataName), vertices, relativeReadTime, values);
 }
 
-void SolverInterface::writeGlobalData(
-    ::precice::string_view        dataName,
-    ::precice::span<const double> value)
+void SolverInterface::readGlobalData(
+    ::precice::string_view  dataName,
+    double                  relativeReadTime,
+    ::precice::span<double> value) const
 {
-  _impl->writeGlobalData(toSV(dataName), value);
-}
-
-void SolverInterface::readGlobalVectorData(
-    ::precice::string_view dataName,
-    double *               value) const
-{
-  _impl->readGlobalVectorData(toSV(dataName), value);
-}
-
-void SolverInterface::readGlobalVectorData(
-    ::precice::string_view dataName,
-    double                 relativeReadTime,
-    double *               value) const
-{
-  // @todo: needs testing!
-  _impl->readGlobalVectorData(toSV(dataName), relativeReadTime, value);
-}
-
-void SolverInterface::readGlobalScalarData(
-    ::precice::string_view dataName,
-    double &               value) const
-{
-  _impl->readGlobalScalarData(toSV(dataName), value);
-}
-
-void SolverInterface::readGlobalScalarData(
-    ::precice::string_view dataName,
-    double                 relativeReadTime,
-    double &               value) const
-{
-  _impl->readGlobalScalarData(toSV(dataName), relativeReadTime, value);
+  _impl->readGlobalData(toSV(dataName), relativeReadTime, value);
 }
 
 void SolverInterface::setMeshAccessRegion(::precice::string_view meshName,
