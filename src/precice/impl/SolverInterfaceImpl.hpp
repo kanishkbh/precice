@@ -230,9 +230,6 @@ public:
       std::string_view meshName,
       std::string_view dataName) const;
 
-  /// @copydoc SolverInterface::getGlobalDataID
-  int getGlobalDataID(const std::string &dataName) const;
-
   /// @copydoc SolverInterface::readData
   void readData(
       std::string_view                meshName,
@@ -255,13 +252,12 @@ public:
       ::precice::span<const VertexID> vertices,
       ::precice::span<const double>   gradients);
 
-/// @copydoc SolverInterface::writeGlobalVectorData
+  /// @copydoc SolverInterface::writeGlobalVectorData
   void writeGlobalVectorData(
       std::string_view dataName,
       const double *   value);
 
-
-    /// @copydoc SolverInterface::writeGlobalScalarData
+  /// @copydoc SolverInterface::writeGlobalScalarData
   void writeGlobalScalarData(
       std::string_view dataName,
       double           value);
@@ -424,7 +420,6 @@ private:
       double           relativeReadTime,
       double &         value) const;
 
-
   /// Exports meshes with data and watch point data.
   void handleExports();
 
@@ -486,7 +481,6 @@ private:
       int     toDataID,
       double  relativeReadTime,
       double *value) const;
-
 
   void readGlobalScalarDataImpl(
       int     toDataID,
