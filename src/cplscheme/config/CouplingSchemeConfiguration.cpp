@@ -235,7 +235,6 @@ void CouplingSchemeConfiguration::xmlTagCallback(
     bool               strict   = tag.getBooleanAttributeValue(ATTR_STRICT);
     PRECICE_ASSERT(_config.type == VALUE_SERIAL_IMPLICIT || _config.type == VALUE_PARALLEL_IMPLICIT || _config.type == VALUE_MULTI);
     addAbsoluteConvergenceMeasure(dataName, limit, suffices, strict, meshName);
-
   } else if (tag.getName() == TAG_REL_CONV_MEASURE) {
     const std::string &dataName = tag.getStringAttributeValue(ATTR_DATA);
     const std::string &meshName = tag.getStringAttributeValue(ATTR_MESH);
@@ -243,11 +242,7 @@ void CouplingSchemeConfiguration::xmlTagCallback(
     bool               suffices = tag.getBooleanAttributeValue(ATTR_SUFFICES);
     bool               strict   = tag.getBooleanAttributeValue(ATTR_STRICT);
     PRECICE_ASSERT(_config.type == VALUE_SERIAL_IMPLICIT || _config.type == VALUE_PARALLEL_IMPLICIT || _config.type == VALUE_MULTI);
-    if (!meshName.empty()) {
-      addRelativeConvergenceMeasure(dataName, meshName, limit, suffices, strict);
-    } else {
-      addRelativeConvergenceMeasureGlobalData(dataName, limit, suffices, strict);
-    }
+    addRelativeConvergenceMeasure(dataName, limit, suffices, strict, meshName);
   } else if (tag.getName() == TAG_RES_REL_CONV_MEASURE) {
     const std::string &dataName = tag.getStringAttributeValue(ATTR_DATA);
     const std::string &meshName = tag.getStringAttributeValue(ATTR_MESH);
@@ -255,11 +250,7 @@ void CouplingSchemeConfiguration::xmlTagCallback(
     bool               suffices = tag.getBooleanAttributeValue(ATTR_SUFFICES);
     bool               strict   = tag.getBooleanAttributeValue(ATTR_STRICT);
     PRECICE_ASSERT(_config.type == VALUE_SERIAL_IMPLICIT || _config.type == VALUE_PARALLEL_IMPLICIT || _config.type == VALUE_MULTI);
-    if (!meshName.empty()) {
-      addResidualRelativeConvergenceMeasure(dataName, meshName, limit, suffices, strict);
-    } else {
-      addResidualRelativeConvergenceMeasureGlobalData(dataName, limit, suffices, strict);
-    }
+    addResidualRelativeConvergenceMeasure(dataName, limit, suffices, strict, meshName);
   } else if (tag.getName() == TAG_MIN_ITER_CONV_MEASURE) {
     const std::string &dataName      = tag.getStringAttributeValue(ATTR_DATA);
     const std::string &meshName      = tag.getStringAttributeValue(ATTR_MESH);
@@ -267,11 +258,7 @@ void CouplingSchemeConfiguration::xmlTagCallback(
     bool               suffices      = tag.getBooleanAttributeValue(ATTR_SUFFICES);
     bool               strict        = tag.getBooleanAttributeValue(ATTR_STRICT);
     PRECICE_ASSERT(_config.type == VALUE_SERIAL_IMPLICIT || _config.type == VALUE_PARALLEL_IMPLICIT || _config.type == VALUE_MULTI);
-    if (!meshName.empty()) {
-      addMinIterationConvergenceMeasure(dataName, meshName, minIterations, suffices, strict);
-    } else {
-      addMinIterationConvergenceMeasureGlobalData(dataName, minIterations, suffices, strict);
-    }
+    addMinIterationConvergenceMeasure(dataName, minIterations, suffices, strict, meshName);
 
   } else if (tag.getName() == TAG_EXCHANGE) {
     std::string nameData            = tag.getStringAttributeValue(ATTR_DATA);
@@ -741,10 +728,10 @@ void CouplingSchemeConfiguration::addAbsoluteConvergenceMeasure(
 
 void CouplingSchemeConfiguration::addRelativeConvergenceMeasure(
     const std::string &dataName,
-    const std::string &meshName,
     double             limit,
     bool               suffices,
-    bool               strict)
+    bool               strict,
+    const std::string &meshName)
 {
   PRECICE_TRACE();
   PRECICE_CHECK(math::greater(limit, 0.0) && math::greaterEquals(1.0, limit),
@@ -769,17 +756,12 @@ void CouplingSchemeConfiguration::addRelativeConvergenceMeasure(
   _config.convergenceMeasureDefinitions.push_back(convMeasureDef);
 }
 
-void CouplingSchemeConfiguration::addRelativeConvergenceMeasureGlobalData(const std::string &dataName, double limit, bool suffices, bool strict)
-{
-  PRECICE_ERROR("TODO");
-}
-
 void CouplingSchemeConfiguration::addResidualRelativeConvergenceMeasure(
     const std::string &dataName,
-    const std::string &meshName,
     double             limit,
     bool               suffices,
-    bool               strict)
+    bool               strict,
+    const std::string &meshName)
 {
   PRECICE_TRACE();
   PRECICE_CHECK(math::greater(limit, 0.0) && math::greaterEquals(1.0, limit),
@@ -804,17 +786,12 @@ void CouplingSchemeConfiguration::addResidualRelativeConvergenceMeasure(
   _config.convergenceMeasureDefinitions.push_back(convMeasureDef);
 }
 
-void CouplingSchemeConfiguration::addResidualRelativeConvergenceMeasureGlobalData(const std::string &dataName, double limit, bool suffices, bool strict)
-{
-  PRECICE_ERROR("TODO");
-}
-
 void CouplingSchemeConfiguration::addMinIterationConvergenceMeasure(
     const std::string &dataName,
-    const std::string &meshName,
     int                minIterations,
     bool               suffices,
-    bool               strict)
+    bool               strict,
+    const std::string &meshName)
 {
   PRECICE_TRACE();
   impl::PtrConvergenceMeasure measure(new impl::MinIterationConvergenceMeasure(minIterations));
@@ -826,11 +803,6 @@ void CouplingSchemeConfiguration::addMinIterationConvergenceMeasure(
   convMeasureDef.measure     = std::move(measure);
   convMeasureDef.doesLogging = false;
   _config.convergenceMeasureDefinitions.push_back(convMeasureDef);
-}
-
-void CouplingSchemeConfiguration::addMinIterationConvergenceMeasureGlobalData(const std::string &dataName, int minIterations, bool suffices, bool strict)
-{
-  PRECICE_ERROR("TODO");
 }
 
 mesh::PtrData CouplingSchemeConfiguration::getData(
@@ -921,7 +893,7 @@ PtrCouplingScheme CouplingSchemeConfiguration::createSerialImplicitCouplingSchem
                 accessor);
 
   // Add convergence measures
-  PRECICE_CHECK((not _config.convergenceMeasureDefinitions.empty()),
+  PRECICE_CHECK(not _config.convergenceMeasureDefinitions.empty(),
                 "At least one convergence measure has to be defined for an implicit coupling scheme. "
                 "Please check your <coupling-scheme ... /> and make sure that you provide at least one "
                 "<...-convergence-measure/> subtag in the precice-config.xml.");
@@ -958,7 +930,7 @@ PtrCouplingScheme CouplingSchemeConfiguration::createParallelImplicitCouplingSch
                 accessor);
 
   // Add convergence measures
-  PRECICE_CHECK((not _config.convergenceMeasureDefinitions.empty()),
+  PRECICE_CHECK(not _config.convergenceMeasureDefinitions.empty(),
                 "At least one convergence measure has to be defined for an implicit coupling scheme. "
                 "Please check your <coupling-scheme ... /> and make sure that you provide at least one <...-convergence-measure/> subtag in the precice-config.xml.");
   addConvergenceMeasures(scheme, _config.participants[1], _config.convergenceMeasureDefinitions);
@@ -999,7 +971,7 @@ PtrCouplingScheme CouplingSchemeConfiguration::createMultiCouplingScheme(
                 accessor);
 
   // Add convergence measures
-  PRECICE_CHECK((not _config.convergenceMeasureDefinitions.empty()),
+  PRECICE_CHECK(not _config.convergenceMeasureDefinitions.empty(),
                 "At least one convergence measure has to be defined for an implicit coupling scheme. "
                 "Please check your <coupling-scheme ... /> and make sure that you provide at least one "
                 "<...-convergence-measure/> subtag in the precice-config.xml.");
