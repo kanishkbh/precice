@@ -4,7 +4,6 @@
 #include <vector>
 #include "logging/Logger.hpp"
 #include "mesh/Data.hpp"
-// #include "mesh/GlobalData.hpp"
 #include "mesh/SharedPointer.hpp"
 #include "utils/ManageUniqueIDs.hpp"
 #include "xml/XMLTag.hpp"
@@ -18,7 +17,7 @@ public:
   struct ConfiguredData {
     std::string name;
     int         dimensions;
-    bool        isGlobal; // false = mesh data, true = meshless/global data
+    bool        isGlobal; // false = mesh-associated data, true = global data
 
     ConfiguredData(
         const std::string &name,

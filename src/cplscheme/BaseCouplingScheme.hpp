@@ -514,7 +514,7 @@ private:
 
   /**
    * @brief Holds meta information to perform a convergence measurement.
-   * @param data Associated data field (mesh-associated)
+   * @param data Associated data field
    * @param couplingData Coupling data history
    * @param suffices Whether this measure already suffices for convergence
    * @param strict Whether non-convergence of this measure leads to a premature end of the simulation
@@ -536,7 +536,6 @@ private:
 
   /**
    * @brief Holds meta information to perform a convergence measurement.
-   * @param data Associated global-data
    * @param couplingData Coupling data history
    * @param suffices Whether this measure already suffices for convergence
    * @param strict Whether non-convergence of this measure leads to a premature end of the simulation
