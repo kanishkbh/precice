@@ -339,7 +339,6 @@ void ParticipantImpl::initialize()
   for (auto &context : _accessor->readDataContexts()) {
     context.moveToNextWindow();
   }
-
   for (auto &context : _accessor->readGlobalDataContexts()) {
     context.moveToNextWindow();
   }
@@ -559,7 +558,7 @@ bool ParticipantImpl::hasData(
   return _accessor->isDataUsed(dataName, meshName);
 }
 
-bool SolverInterfaceImpl::requiresMeshConnectivityFor(std::string_view meshName) const
+bool ParticipantImpl::requiresMeshConnectivityFor(std::string_view meshName) const
 {
   PRECICE_VALIDATE_MESH_NAME(meshName);
   MeshContext &context = _accessor->usedMeshContext(meshName);
@@ -1100,7 +1099,7 @@ void ParticipantImpl::writeGradientData(
   context.writeGradientsIntoDataBuffer(vertices, gradients);
 }
 
-void SolverInterfaceImpl::writeGlobalData(
+void ParticipantImpl::writeGlobalData(
     std::string_view              dataName,
     ::precice::span<const double> value)
 {
@@ -1126,7 +1125,7 @@ void SolverInterfaceImpl::writeGlobalData(
   context.writeValue(value);
 }
 
-void SolverInterfaceImpl::readGlobalData(
+void ParticipantImpl::readGlobalData(
     std::string_view        dataName,
     double                  relativeReadTime,
     ::precice::span<double> value) const
