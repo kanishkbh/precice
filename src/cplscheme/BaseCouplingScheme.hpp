@@ -278,7 +278,7 @@ protected:
    * @brief Sends all global data in the map sendGlobalData with communication.
    *
    * @param m2n M2N used for communication
-   * @param sendData DataMap associated with sent data
+   * @param sendGlobalData GlobalDataMap associated with sent data
    */
   void sendGlobalData(const m2n::PtrM2N &m2n, const GlobalDataMap &sendGlobalData);
 
@@ -286,7 +286,7 @@ protected:
    * @brief Receives all global data in the map receiveGlobalData with communication.
    *
    * @param m2n M2N used for communication
-   * @param receiveData DataMap associated with received data
+   * @param receiveGlobalData GlobalDataMap associated with received data
    */
   void receiveGlobalData(const m2n::PtrM2N &m2n, const GlobalDataMap &receiveGlobalData);
 
@@ -296,6 +296,13 @@ protected:
    * @param receiveData DataMap associated with received data
    */
   void initializeWithZeroInitialData(const DataMap &receiveData);
+
+  /**
+   * @brief Initializes storage in receiveGlobalData as zero
+   *
+   * @param receiveGlobalData GlobalDataMap associated with received global data
+   */
+  void initializeWithZeroInitialData(const GlobalDataMap &receiveGlobalData);
 
   /**
    * @brief Adds CouplingData with given properties to this BaseCouplingScheme and returns a pointer to the CouplingData
@@ -420,6 +427,12 @@ protected:
    * @param receiveData CouplingData being checked
    */
   void determineInitialReceive(DataMap &receiveData);
+
+  /**
+   * @brief Sets _receivesInitializedData, if receiveGlobalData requires initialization
+   * @param receiveGlobalData GlobalCouplingData being checked
+   */
+  void determineInitialReceive(GlobalDataMap &receiveGlobalData);
 
 private:
   /// Coupling mode used by coupling scheme.

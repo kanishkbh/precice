@@ -95,10 +95,10 @@ protected:
   /// Returns all data to be received.
   DataMap &getReceiveData();
 
-  /// Returns all data to be sent.
+  /// Returns all global data to be sent.
   GlobalDataMap &getSendGlobalData();
 
-  /// Returns all data to be received.
+  /// Returns all global data to be received.
   GlobalDataMap &getReceiveGlobalData();
 
   /// Sets the values
@@ -110,7 +110,7 @@ protected:
   /// Sets the values
   GlobalCouplingData *getSendGlobalData(DataID dataID);
 
-  /// Returns all data to be received with data ID as given.
+  /// Returns all global data to be received with data ID as given.
   GlobalCouplingData *getReceiveGlobalData(DataID dataID);
 
   /// @return Communication device to the other coupling participant.

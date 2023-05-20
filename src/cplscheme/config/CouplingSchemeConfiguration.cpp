@@ -343,6 +343,18 @@ void CouplingSchemeConfiguration::xmlEndTagCallback(
                 dataContext.getDataName(), dataContext.getMeshName(), usedOrder, allowedOrder);
           }
         }
+        // check for global data
+        for (const auto &dataContext : first_participant->readGlobalDataContexts()) {
+          const int usedOrder = dataContext.getInterpolationOrder();
+          // The first participants waveform order has to be 0 for serial explicit coupling
+          int allowedOrder = 0;
+          if (usedOrder != allowedOrder) {
+            PRECICE_ERROR(
+                "You configured <read-data name=\"{}\" waveform-order=\"{}\" />, but for the serial explicit coupling scheme only a maximum waveform-order of \"{}\" is allowed for the first participant.",
+                dataContext.getDataName(), usedOrder, allowedOrder);
+          }
+        }
+
         auto second_participant = _participantConfig->getParticipant(second);
         for (const auto &dataContext : second_participant->readDataContexts()) {
           const int usedOrder = dataContext.getInterpolationOrder();
@@ -350,6 +362,15 @@ void CouplingSchemeConfiguration::xmlEndTagCallback(
             PRECICE_ERROR(
                 "You configured <read-data name=\"{}\" mesh=\"{}\" waveform-order=\"{}\" />, but for the serial explicit coupling scheme the waveform-order must be non-negative for the second participant.",
                 dataContext.getDataName(), dataContext.getMeshName(), usedOrder);
+          }
+        }
+        // check for global data
+        for (const auto &dataContext : second_participant->readGlobalDataContexts()) {
+          const int usedOrder = dataContext.getInterpolationOrder();
+          if (usedOrder < 0) {
+            PRECICE_ERROR(
+                "You configured <read-data name=\"{}\" waveform-order=\"{}\" />, but for the serial explicit coupling scheme the waveform-order must be non-negative for the second participant.",
+                dataContext.getDataName(), usedOrder);
           }
         }
       }
@@ -1159,6 +1180,16 @@ void CouplingSchemeConfiguration::checkWaveformOrderReadData(
         PRECICE_ERROR(
             "You configured <read-data name=\"{}\" mesh=\"{}\" waveform-order=\"{}\" />, but for the coupling scheme you are using only a maximum waveform-order of \"{}\" is allowed.",
             dataContext.getDataName(), dataContext.getMeshName(), usedOrder, maxAllowedOrder);
+      }
+    }
+    // check for global data
+    for (const auto &dataContext : participant->readGlobalDataContexts()) {
+      const int usedOrder = dataContext.getInterpolationOrder();
+      PRECICE_ASSERT(usedOrder >= 0); // ensure that usedOrder was set
+      if (usedOrder > maxAllowedOrder) {
+        PRECICE_ERROR(
+            "You configured <read-data name=\"{}\" waveform-order=\"{}\" />, but for the coupling scheme you are using only a maximum waveform-order of \"{}\" is allowed.",
+            dataContext.getDataName(), usedOrder, maxAllowedOrder);
       }
     }
   }
