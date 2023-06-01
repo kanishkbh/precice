@@ -95,21 +95,27 @@ void SerialCouplingScheme::exchangeInitialData()
   if (doesFirstStep()) {
     if (sendsInitializedData()) {
       sendData(getM2N(), getSendData());
+      sendGlobalData(getM2N(), getSendGlobalData());
     }
     if (receivesInitializedData()) {
       receiveData(getM2N(), getReceiveData(), initialReceive);
+      receiveGlobalData(getM2N(), getReceiveGlobalData(), initialReceive);
       checkDataHasBeenReceived();
     } else {
       initializeWithZeroInitialData(getReceiveData());
+      initializeWithZeroInitialData(getReceiveGlobalData());
     }
   } else { // second participant
     if (receivesInitializedData()) {
       receiveData(getM2N(), getReceiveData(), initialReceive);
+      receiveGlobalData(getM2N(), getReceiveGlobalData(), initialReceive);
     } else {
       initializeWithZeroInitialData(getReceiveData());
+      initializeWithZeroInitialData(getReceiveGlobalData());
     }
     if (sendsInitializedData()) {
       sendData(getM2N(), getSendData());
+      sendGlobalData(getM2N(), getSendGlobalData());
     }
     // similar to SerialCouplingScheme::exchangeSecondData()
     receiveAndSetTimeWindowSize();

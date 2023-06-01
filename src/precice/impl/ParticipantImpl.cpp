@@ -341,20 +341,6 @@ void ParticipantImpl::initialize()
   mapReadData();
   performDataActions({action::Action::READ_MAPPING_POST}, 0.0);
 
-  for (auto &context : _accessor->readDataContexts()) {
-    context.moveToNextWindow();
-  }
-  for (auto &context : _accessor->readGlobalDataContexts()) {
-    context.moveToNextWindow();
-  }
-
-  _couplingScheme->receiveResultOfFirstAdvance();
-
-  if (_couplingScheme->hasDataBeenReceived()) {
-    mapReadData();
-    performDataActions({action::Action::READ_MAPPING_POST}, 0.0);
-  }
-
   resetWrittenData(false, false);
   PRECICE_DEBUG("Plot output");
   _accessor->exportFinal();
@@ -1480,7 +1466,7 @@ void ParticipantImpl::resetWrittenData(bool isAtWindowEnd, bool isTimeWindowComp
     context.resetData(isAtWindowEnd, isTimeWindowComplete);
   }
   for (auto &context : _accessor->writeGlobalDataContexts()) {
-    context.resetData(isAtWindowEnd);
+    context.resetData(isAtWindowEnd, isTimeWindowComplete);
   }
 }
 
