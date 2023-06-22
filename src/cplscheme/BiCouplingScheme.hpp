@@ -126,10 +126,10 @@ private:
   /// All receive data as a map "data ID -> data"
   DataMap _receiveData;
 
-  /// All send global data as a map "data ID -> global data"
+  /// All send global data as a map "data ID -> data"
   DataMap _sendGlobalData;
 
-  /// All receive global data as a map "data ID -> global data"
+  /// All receive global data as a map "data ID -> data"
   DataMap _receiveGlobalData;
 
   /// First participant name.
