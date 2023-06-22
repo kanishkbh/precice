@@ -91,10 +91,10 @@ protected:
   DataMap &getReceiveData();
 
   /// Returns all global data to be sent.
-  GlobalDataMap &getSendGlobalData();
+  DataMap &getSendGlobalData();
 
   /// Returns all global data to be received.
-  GlobalDataMap &getReceiveGlobalData();
+  DataMap &getReceiveGlobalData();
 
   /// Sets the values
   CouplingData *getSendData(DataID dataID);
@@ -103,10 +103,10 @@ protected:
   CouplingData *getReceiveData(DataID dataID);
 
   /// Sets the values
-  GlobalCouplingData *getSendGlobalData(DataID dataID);
+  CouplingData *getSendGlobalData(DataID dataID);
 
   /// Returns all global data to be received with data ID as given.
-  GlobalCouplingData *getReceiveGlobalData(DataID dataID);
+  CouplingData *getReceiveGlobalData(DataID dataID);
 
   /// @return Communication device to the other coupling participant.
   m2n::PtrM2N getM2N() const;
@@ -127,10 +127,10 @@ private:
   DataMap _receiveData;
 
   /// All send global data as a map "data ID -> global data"
-  GlobalDataMap _sendGlobalData;
+  DataMap _sendGlobalData;
 
   /// All receive global data as a map "data ID -> global data"
-  GlobalDataMap _receiveGlobalData;
+  DataMap _receiveGlobalData;
 
   /// First participant name.
   std::string _firstParticipant = "unknown";

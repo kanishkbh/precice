@@ -22,8 +22,9 @@ CouplingData::CouplingData(
   _previousIteration = time::Sample{Eigen::VectorXd::Zero(getSize())};
   timeStepsStorage().setExtrapolationOrder(extrapolationOrder);
 
-  PRECICE_ASSERT(_mesh != nullptr);
-  PRECICE_ASSERT(_mesh.use_count() > 0);
+  if (_mesh != nullptr) {
+    PRECICE_ASSERT(_mesh.use_count() > 0);
+  }
 }
 
 int CouplingData::getDimensions() const
