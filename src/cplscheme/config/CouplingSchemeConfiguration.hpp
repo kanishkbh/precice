@@ -160,6 +160,7 @@ private:
       std::string   from;
       std::string   to;
       bool          requiresInitialization;
+      bool          exchangeSubsteps;
     };
     std::vector<Exchange>                    exchanges;
     std::vector<GlobalExchange>              globalExchanges;
@@ -326,6 +327,19 @@ private:
    * @param exchange The Exchange being checked.
    */
   void checkSubstepExchangeWaveformOrder(const Config::Exchange &exchange) const;
+
+  /**
+   * @brief Helper function to check that waveform-order and substep exchange for global data are compatible.
+   *
+   * The following rules are checked:
+   *
+   * 1) If waveform-order="0", then user must set substeps="false", because order zero is intended for debugging and user should use first order instead.
+   * 2) If waveform-order="1", then any configuration for substeps is allowed. The user might want to set substeps="false" for better performance.
+   * 3) If waveform-order="2" or greater, the user must set substeps="true", because subcycling and exchange of substeps is required for higher-order.
+   *
+   * @param exchange The GlobalExchange being checked.
+   */
+  void checkSubstepExchangeWaveformOrder(const Config::GlobalExchange &exchange) const;
 };
 } // namespace cplscheme
 } // namespace precice
